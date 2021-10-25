@@ -1,7 +1,7 @@
 # openlibrary
-A Node.js client library written in TypeScript for interacting with the Open Library APIs. Requests made to the Open Library APIs using [axios](https://www.npmjs.com/package/axios#request-config).
+A Node.js client library written in TypeScript for interacting with the Open Library APIs. Requests made using [axios](https://www.npmjs.com/package/axios).
 
-# Why openlibrary?
+## Why openlibrary?
 The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more, this plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
 openlibrary is written in TypeScript to be extra fast and provides a user-friendly client library to interface with the Open Library APIs.
@@ -10,7 +10,7 @@ openlibrary is written in TypeScript to be extra fast and provides a user-friend
 Install the package from npm (once its published!).
 
 ```shell
-npm i openlibrary
+npm install openlibrary
 ```
 
 Add it to your project:
@@ -19,7 +19,7 @@ Add it to your project:
 const OpenLibrary = require("openlibrary");
 
 // Create a client representing the Open Library Books APIs
-const openLibrary = new OpenLibBooksApi();
+const openLibrary = new OpenLibrary();
 
 // Object representing the 'Works' API within the Books APIs
 const { works } = openLibrary.booksApi;
@@ -43,9 +43,6 @@ works.getBook("OL45883W", "", "yml").then(res => {
     //         key: /authors/OL34184A
     //     type:
     //         key: /type/author_role
-    // covers:
-    // - 6498519
-    // - 8904777
     // ...
 });
 
@@ -59,7 +56,7 @@ works.getBook("OL45883W", "Fantastic_Mr._FOX").then(res => {
 ```
 
 ## Integrations
-The openlib client library supports the following Open Library APIs:
+The openlibrary client supports the following Open Library APIs:
 
 - Books API - Retrieve a specific work or edition by identifier
 - Authors API - Retrieve an author and their works by author identifier
@@ -70,7 +67,7 @@ The openlib client library supports the following Open Library APIs:
 - Covers API - Fetch book covers by ISBN or Open Library identifier
 - Recent Changes API (todo) - Programatic access to changes across Open Library
 
-## Methods
+## Config
 Todo
 
 ## Testing
