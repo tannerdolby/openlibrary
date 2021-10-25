@@ -34,7 +34,7 @@ openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
     // }
 });
 
-// Fetch a Work page by identifier and return a .yml output
+// Fetch an 'ISBN' page by identifier and return a .yml output
 openLibrary.getIsbnPage("OL45883W", "", "yml").then(res => {
     console.log(res);
     // authors:
@@ -45,8 +45,8 @@ openLibrary.getIsbnPage("OL45883W", "", "yml").then(res => {
     // ...
 });
 
-// Fetch a Work page by ID and Title and return HTML
-openLibrary.getWorksPage("OL45883W", "Fantastic_Mr._FOX").then(res => {
+// Fetch an 'Editions' page (from Books API) by ID and Title and return HTML
+openLibrary.getBooksPage("OL45883W", "Fantastic_Mr._FOX").then(res => {
     console.log(res);
     // <html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
     // <title>Fantastic Mr. Fox (October 1, 1988 edition) | Open Library</title>
