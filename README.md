@@ -2,7 +2,9 @@
 A Node.js Open Library client written in TypeScript for interacting with the Open Library APIs. Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios).
 
 ## Why openlibrary?
-`openlibrary` is fast! ⚡Its written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs. 
+`openlibrary` is fast! ⚡
+
+It's written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs.
 
 The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
@@ -21,12 +23,9 @@ const OpenLibrary = require("openlibrary");
 // Create a client representing the Open Library Books APIs
 const openLibrary = new OpenLibrary();
 
-// Object representing the 'Works' API within the Books APIs
-const { works } = openLibrary.booksApi;
-
-// Fetch a Work page by identifier and return a .json output
-// e.g. '/books/OL7353617M.json' 
-works.getBook("OL45883W", "", "json").then(res => {
+// Fetch a Works page by identifier and return a .json output
+// e.g. '/works/OL7353617M.json' 
+openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
     console.log(res);
     // { 
     //     description: "The main character Fantastic Mr. Fox ...",
@@ -36,7 +35,7 @@ works.getBook("OL45883W", "", "json").then(res => {
 });
 
 // Fetch a Work page by identifier and return a .yml output
-works.getBook("OL45883W", "", "yml").then(res => {
+openLibrary.getIsbnPage("OL45883W", "", "yml").then(res => {
     console.log(res);
     // authors:
     // -   author:
@@ -47,7 +46,7 @@ works.getBook("OL45883W", "", "yml").then(res => {
 });
 
 // Fetch a Work page by ID and Title and return HTML
-works.getBook("OL45883W", "Fantastic_Mr._FOX").then(res => {
+openLibrary.getWorksPage("OL45883W", "Fantastic_Mr._FOX").then(res => {
     console.log(res);
     // <html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
     // <title>Fantastic Mr. Fox (October 1, 1988 edition) | Open Library</title>
