@@ -4,7 +4,7 @@ A Node.js Open Library client written in TypeScript for interacting with the Ope
 ## Why openlibrary?
 `openlibrary` is fast! ⚡
 
-Its written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs.
+Its written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs. 
 
 The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
@@ -84,6 +84,8 @@ npm run test
 todo
 
 ## Kudos & Other Client Libraries
+Huge thanks to the Open Library team for providing such a robust set of public APIs.
+
 - [Open Library Developer Center / APIs](https://openlibrary.org/developers/api)
 - [openlibrary/openlibrary-client](https://github.com/internetarchive/openlibrary-client#other-client-libraries)- Python
 - [jayfajardo/openlibrary](https://github.com/jayfajardo/openlibrary) - Ruby
