@@ -43,9 +43,8 @@ export default class OpenLibrary {
         }
     }
 
-    // Covers API
     /**
-     * Get a single book covers image URL.
+     * Get a book covers image URL from the Covers API.
      * @param key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
      * @param value The corresponding value for `key`.
      * @param size The size of the book cover image. Can be one of S, M and L for small, medium and large respectively.
@@ -57,7 +56,7 @@ export default class OpenLibrary {
     }
 
     /**
-     * Get a list of book covers image URLs.
+     * Get a list of book cover image URLs from the Covers API.
      * @param coversObjList An array of book cover objects to return book covers for. (e.g. [{title: string, id: string | number, key: string, size: string},]
      * @returns An array of book cover image URLs.
     */
@@ -132,7 +131,7 @@ export default class OpenLibrary {
     }
 
     // Authors API
-    async getAuthorsPage (authorId: string, suffix: string = "json") {
+    async getAuthorsPage (authorId: string, suffix: Suffix = "json") {
         // todo
         let request: string = `${this.baseUrl}/authors/${authorId}.${suffix}`;
         let response = this.executeGetRequest(request, suffix, this.requestConfig);
