@@ -1,5 +1,5 @@
 # openlibrary
-A Node.js Open Library client library written in TypeScript for interacting with the Open Library APIs. Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios).
+A Node.js Open Library client written in TypeScript for interacting with the Open Library APIs. Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios).
 
 ## Why openlibrary?
 openlibrary is written in TypeScript to be extra fast and provides a user-friendly client library to interact with the Open Library APIs.
