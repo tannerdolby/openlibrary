@@ -53,8 +53,7 @@ export default class OpenLibrary {
     async getBookCover(key: string, value: string | number, size: string) {
         let request: string = `${this.baseUrl}/b/${key}/${value}-${size}.jpg`;
         let response = await axios.get(request, this.requestConfig);
-        
-        return response["status"] == 200 ? response["url"] : { "message": "Request failed", "response": response };
+        return response;
     }
 
     /**
