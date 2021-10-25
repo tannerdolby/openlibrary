@@ -1,10 +1,10 @@
 # openlibrary
-A Node.js client library written in TypeScript for interacting with the Open Library APIs. Requests made using [axios](https://www.npmjs.com/package/axios).
+A Node.js Open Library client library written in TypeScript for interacting with the Open Library APIs. Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios).
 
 ## Why openlibrary?
-The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more, this plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
+openlibrary is written in TypeScript to be extra fast and provides a user-friendly client library to interact with the Open Library APIs.
 
-openlibrary is written in TypeScript to be extra fast and provides a user-friendly client library to interface with the Open Library APIs.
+The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more, this plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
 ## Installation
 Install the package from npm (once its published!).
@@ -81,5 +81,7 @@ npm run test
 
 todo
 
-## Kudos
+## Kudos & Other Client Libraries
 - [Open Library Developer Center / APIs](https://openlibrary.org/developers/api)
+- [openlibrary/openlibrary-client](https://github.com/internetarchive/openlibrary-client#other-client-libraries)- Python
+- [jayfajardo/openlibrary](https://github.com/jayfajardo/openlibrary) - Ruby
