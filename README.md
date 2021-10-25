@@ -2,9 +2,11 @@
 A Node.js Open Library client written in TypeScript for interacting with the Open Library APIs. Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios).
 
 ## Why openlibrary?
-openlibrary is written in TypeScript to be extra fast and provides a user-friendly client library to interact with the Open Library APIs.
+`openlibrary` is fast! ⚡
 
-The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more, this plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
+Its written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs.
+
+The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
 ## Installation
 Install the package from npm (once its published!).
@@ -67,7 +69,7 @@ The openlibrary client supports the following Open Library APIs:
 - Covers API - Fetch book covers by ISBN or Open Library identifier
 - Recent Changes API (todo) - Programatic access to changes across Open Library
 
-## Config
+## Methods
 Todo
 
 ## Testing
@@ -77,7 +79,7 @@ Jest is the test framework used. Run all of the unit tests locally with:
 npm run test
 ```
 
-## Contributing
+## Contributing 🌱
 
 todo
 
