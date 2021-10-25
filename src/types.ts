@@ -123,3 +123,5 @@ export type BookCovers = {
     key: string;
     size: string;
 }
+
+export type OpenLibResponse = Promise<string | GetWorksPageFileResponse | GetWorksPageGenericResponse | undefined>;
