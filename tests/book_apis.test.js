@@ -157,7 +157,7 @@ test("A request to the 'ISBN' API for a given book returns expected .yml output"
 // });
 
 test("A request to the 'Books' (Editions) API for a given book returns expected .yml output", () => {
-    let results = openLibrary.getBooksPage("OL7353617M", "", "yml");
+    let results = openLibrary.getEditionsPage("OL7353617M", "", "yml");
     results.then(res => {
         let yamlObj = yaml.load(res, "utf-8");
         expect(yamlObj["publishers"]).toEqual([ 'Puffin' ]);
@@ -173,7 +173,7 @@ test("A request to the 'Books' (Editions) API for a given book returns expected 
 });
 
 test("A request to the 'Books' (Editions) API for a given book ID and file suffix returns expected .json output", () => {
-    let results = openLibrary.getBooksPage("OL7353617M", "", "json");
+    let results = openLibrary.getEditionsPage("OL7353617M", "", "json");
     results.then(res => {
         expect(res["publishers"]).toEqual([ 'Puffin' ]);
         expect(res["number_of_pages"]).toBe(96);
@@ -188,7 +188,7 @@ test("A request to the 'Books' (Editions) API for a given book ID and file suffi
 });
 
 test("A request to the 'Books' (Editions) API for a given book ID and title returns expected HTML output", () => {
-    let results = openLibrary.getBooksPage("OL7353617M", "Fantastic_Mr._Fox");
+    let results = openLibrary.getEditionsPage("OL7353617M", "Fantastic_Mr._Fox");
     results.then(res => {
         const $ = cheerio.load(res);
         expect($("title").text()).toBe("Fantastic Mr. Fox (October 1, 1988 edition) | Open Library");
@@ -242,5 +242,54 @@ test("A request to the 'Authors' API for a given author ID returns expected JSON
         );
         expect(res["birth_date"]).toEqual("31 July 1965");
         expect(res["name"]).toBe("J. K. Rowling");
+    });
+});
+
+test("A request to the 'Authors' API for a given author ID returns expected YAML output", () => {
+    let results = openLibrary.getAuthorsPage("OL23919A", "yml");
+    results.then(res => {
+        let yamlObj = yaml.load(res, "utf-8");
+        expect(yamlObj["alternate_names"]).toEqual([ 'Joanne Rowling',
+        'Joanne K. Rowling',
+        'J.K.Rowling',
+        'Rowling, J.K.',
+        'J. Rowling',
+        'Rowling, Joanne K.',
+        'Jo Murray',
+        'J K Rowling',
+        'Rowling J.K.',
+        'J.K. Rowling (author)',
+        'Rowling Joanne',
+        'J.K. Rowling',
+        'J.K. ROWLING',
+        'Rowling J K',
+        'J K ROWLING',
+        'Newt Scamander',
+        'JOANNE K. ROWLING',
+        'Kennilworthy Whisp',
+        'JK Rowling',
+        'JK Rowlings',
+        'jk rowling',
+        'R.K Rowling',
+        'J. K Rowling',
+        'J.K Rowling',
+        'Rowling J. K.',
+        'J. K. Rowling (Auteur)',
+        'J.k. Rowling',
+        'Rowling, J. K.',
+        'ROWLING J.K. -',
+        'J. K. ROWLING',
+        'Rowling,J.K.',
+        'J. K. Rowling',
+        'Robert Galbraith',
+        'Robert Galbraith (J.K. Rowling)' ]);
+        expect(yamlObj["wikipedia"]).toEqual("http://en.wikipedia.org/wiki/J._K._Rowling");
+        expect(yamlObj["bio"]["type"]).toEqual("/type/text")
+        expect(yamlObj["bio"]["value"]).toEqual('Joanne "Jo" Murray, OBE (née Rowling), better known under the pen name J. K. Rowling, is a British author best known as the creator of the Harry Potter fantasy series, the idea for which was conceived whilst on a train trip from Manchester to London in 1990. The Potter books have gained worldwide attention, won multiple awards, sold more than 400 million copies, and been the basis for a popular series of films.')
+        expect(yamlObj["links"]).toEqual(
+            [{ url: 'http://www.jkrowling.com/', type: { key: '/type/link' }, title: 'Official Site' }]
+        );
+        expect(yamlObj["birth_date"]).toEqual("31 July 1965");
+        expect(yamlObj["name"]).toBe("J. K. Rowling");
     });
 });
