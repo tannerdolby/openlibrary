@@ -15,7 +15,8 @@ Install the package from npm (once its published!).
 npm install openlibrary
 ```
 
-Add it to your project:
+## What does it do?
+The client library provides access to all of the public Open Library APIs described in the [integrations](#Integrations) section. After installing the package from npm, add it to your project:
 
 ```js
 const OpenLibrary = require("openlibrary");
@@ -24,7 +25,6 @@ const OpenLibrary = require("openlibrary");
 const openLibrary = new OpenLibrary();
 
 // Fetch a Works page by identifier and return a .json output
-// e.g. '/works/OL7353617M.json' 
 openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
     console.log(res);
     // { 
