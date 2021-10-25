@@ -147,15 +147,3 @@ export default class OpenLibrary {
 }
 
 const openLib = new OpenLibrary();
-// https://openlibrary.org/authors/OL23919A.json
-// openLib.getAuthorsPage("OL23919A").then((res: any) => {
-//     console.log(res, "RESUMESAKI");
-// });
-
-// openLib.getIsbnPage("OL45883W", "", "yml").then((res) => {
-//     console.log(res, "RESUMESAKI");
-// });
-
-// openLib.getWorksPage("OL45883W", "Fantastic_Mr._FOX").then((res) => {
-//     console.log(res, "RESUMESAKI");
-// });
