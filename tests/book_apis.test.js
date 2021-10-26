@@ -291,6 +291,104 @@ test("A request to the 'Authors' API for a given author ID returns expected YAML
     });
 });
 
+test("A request to the 'Authors' API for a given Author ID returns expect .rdf output", () => {
+    let response = openLibrary.getAuthorsPage("OL23919A", "rdf");
+    response.then(res => {
+        expect(res.trim()).toEqual(`<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#'
+  xmlns:bio='http://purl.org/vocab/bio/0.1/'
+  xmlns:rdg2='http://rdvocab.info/ElementsGr2/'
+  xmlns:dcterms='http://purl.org/dc/terms/'
+  xmlns:foaf='http://xmlns.com/foaf/0.1/'
+  xmlns:ov='http://open.vocab.org/terms/'
+  xmlns:owl='http://www.w3.org/2002/07/owl#'
+>
+    
+
+    <foaf:Person rdf:about="http://openlibrary.org/authors/OL23919A">
+            <foaf:name>J. K. Rowling</foaf:name>
+    
+
+            <rdg2:variantNameForThePerson>Joanne Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Joanne K. Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J.K.Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Rowling, J.K.</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J. Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Rowling, Joanne K.</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Jo Murray</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J K Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Rowling J.K.</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J.K. Rowling (author)</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Rowling Joanne</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J.K. Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J.K. ROWLING</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Rowling J K</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J K ROWLING</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Newt Scamander</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>JOANNE K. ROWLING</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Kennilworthy Whisp</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>JK Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>JK Rowlings</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>jk rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>R.K Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J. K Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J.K Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Rowling J. K.</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J. K. Rowling (Auteur)</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J.k. Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Rowling, J. K.</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>ROWLING J.K. -</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J. K. ROWLING</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Rowling,J.K.</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>J. K. Rowling</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Robert Galbraith</rdg2:variantNameForThePerson>
+    <rdg2:variantNameForThePerson>Robert Galbraith (J.K. Rowling)</rdg2:variantNameForThePerson>
+
+            <rdg2:biographicalInformation>Joanne &quot;Jo&quot; Murray, OBE (née Rowling), better known under the pen name J. K. Rowling, is a British author best known as the creator of the Harry Potter fantasy series, the idea for which was conceived whilst on a train trip from Manchester to London in 1990. The Potter books have gained worldwide attention, won multiple awards, sold more than 400 million copies, and been the basis for a popular series of films.</rdg2:biographicalInformation>
+    
+
+            <rdg2:titleOfThePerson>OBE</rdg2:titleOfThePerson>
+    
+
+
+      <bio:event>
+          <bio:Birth>
+               <dcterms:date>31 July 1965</dcterms:date>
+          </bio:Birth>
+      </bio:event>
+      
+      <owl:sameAs rdf:resource="http://isni.org/isni/000000012148628X"/>
+      <owl:sameAs rdf:resource="http://www.wikidata.org/entity/Q34660"/>
+      <owl:sameAs rdf:resource="http://viaf.org/viaf/116796842"/>
+      <foaf:isPrimaryTopicOf>
+          <foaf:Document rdf:about="http://en.wikipedia.org/wiki/J._K._Rowling">
+              <rdfs:label>Wikipedia</rdfs:label>
+          </foaf:Document>
+      </foaf:isPrimaryTopicOf>
+      
+      <foaf:page>
+          <foaf:Document rdf:about="http://www.jkrowling.com/">
+              <rdfs:label>Official Site</rdfs:label>
+          </foaf:Document>
+      </foaf:page>
+      
+      <foaf:depiction>
+          <foaf:Image rdf:about="https://covers.openlibrary.org/b/id/5543033-M.jpg" />
+      </foaf:depiction>
+    </foaf:Person>
+
+    <!-- administrative -->
+    <rdf:Description rdf:about="">
+        <dcterms:modified rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2021-09-30T17:04:08.014242</dcterms:modified>
+        <dcterms:created rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2008-04-01T03:28:50.625462</dcterms:created>
+        <ov:versionnumber>50</ov:versionnumber>
+    </rdf:Description>
+</rdf:RDF>`)
+    });
+});
+
 test("A request to the 'Covers' API for a single Work returns the expect image URL", () => {
     let response = openLibrary.getBookCover("id", 6564962, "L");
     response.then(res => {
@@ -325,5 +423,12 @@ test("A request to the 'Covers' API for mutliple Works returns the expect array 
         ];
         expect(res[0]).toEqual('https://covers.openlibrary.org/b/id/11464254-L.jpg');
         expect(opts.includes(res[1])).toEqual(true);
+    });
+});
+
+test("A request to get an Author photo from OLID returns expect image URL string", () => {
+    let response = openLibrary.getAuthorPhoto("olid", "OL229501A", "S");
+    response.then(res => {
+        expect(res).toEqual("https://covers.openlibrary.org/a/olid/OL229501A-S.jpg")
     });
 });
