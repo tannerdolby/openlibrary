@@ -16,7 +16,7 @@ const OpenLibrary = require("openlibrary");
 
 const openLibrary = new OpenLibrary();
 
-openLibrary.searchForAuthors("H. R. Tolken").then(res => {
+openLibrary.searchForAuthors("J R R Tolken").then(res => {
     console.log(res);
     // { ...
     //   docs:
@@ -51,7 +51,7 @@ openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
 
 It's written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs. There is one class [`OpenLibrary`](https://github.com/tannerdolby/openlibrary/blob/master/src/books.ts) that provides methods to easily interact with Open Library APIs.
 
-The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
+The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [Ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
 ## Integrations
 The `openlibrary` client library supports the following [Open Library APIs](https://openlibrary.org/developers/api):
@@ -59,7 +59,7 @@ The `openlibrary` client library supports the following [Open Library APIs](http
 - [x] Books API - Retrieve a specific work or edition by identifier
 - [x] Authors API - Retrieve an author and their works by author identifier
 - [ ] Subjects API (Experimental) - Fetch books by subject name
-- [ ] Search API (todo) - Search results for books, authors, and more
+- [x] Search API (todo) - Search results for books, authors, and more
 - [ ] Search inside API (todo) - Search for matching text within millions of books
 - [ ] Partner API (todo)- Formerly the "Read" API, fetch one or more books by library identifiers (ISBNs, OCLC, LCCNs)
 - [x] Covers API - Fetch book covers by ISBN or Open Library identifier
