@@ -145,16 +145,13 @@ test("A request to the 'ISBN' API for a given book returns expected .yml output"
     });
 });
 
-// todo: fix this broken test
-// test ("A request to the 'ISBN' API for a given book ID returns expected HTML output", () => {
-//     let results = openLibrary.booksApi.isbn.getBook("9780140328721", "");
-//     results.then((res) => {
-//         const $ = cheerio.load(res.data);
-//         expect($("title").text()).toBe("Fantastic Mr. Fox (October 1, 1988 edition) | Open Library");
-//         expect($("h1.work-title").text()).toBe("Fantastic Mr. Fox");
-//         expect($("h2.edition-byline").text()).toBe("by Roald Dahl");
-//     });
-// });
+test ("A request to the 'ISBN' API for a given book ID returns failed redirect expected HTML output", () => {
+    let results = openLibrary.getIsbnPage("9780140328721", "");
+    results.then(res => {
+        const $ = cheerio.load(res);
+        expect($("title").text()).toBe("/isbn/9780140328721. is not found | Open Library");
+    });
+});
 
 test("A request to the 'Books' (Editions) API for a given book returns expected .yml output", () => {
     let results = openLibrary.getEditionsPage("OL7353617M", "", "yml");
@@ -291,5 +288,42 @@ test("A request to the 'Authors' API for a given author ID returns expected YAML
         );
         expect(yamlObj["birth_date"]).toEqual("31 July 1965");
         expect(yamlObj["name"]).toBe("J. K. Rowling");
+    });
+});
+
+test("A request to the 'Covers' API for a single Work returns the expect image URL", () => {
+    let response = openLibrary.getBookCover("id", 6564962, "L");
+    response.then(res => {
+        expect([
+            "https://ia800603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg",
+            "https://ia600603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg"
+        ].includes(res)).toBe(true);        
+    });
+});
+
+test("A request to the 'Covers' API for mutliple Works returns the expect array of image URLs", () => {
+    let response = openLibrary.getBookCovers([
+        {
+          title: "The Hitch Hiker's Guide to the Galaxy",
+          id: 11464254,
+          key: "id",
+          size: "L",
+          fallback: "https://covers.openlibrary.org/b/id/11464254-L.jpg"
+        },
+        {
+          title: "Star Wars: Splinter of the Mind's Eye",
+          id: 6564962,
+          key: "id",
+          size: "L",
+          fallback: "https://ia600603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg"
+        }
+    ]);
+    response.then(res => {
+        let opts = [
+        'https://ia600603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg',
+        'https://ia800603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg'
+        ];
+        expect(res[0]).toEqual('https://covers.openlibrary.org/b/id/11464254-L.jpg');
+        expect(opts.includes(res[1])).toEqual(true);
     });
 });
