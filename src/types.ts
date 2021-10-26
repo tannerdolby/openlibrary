@@ -125,3 +125,23 @@ export type BookCovers = {
 }
 
 export type OpenLibResponse = Promise<string | GetWorksPageFileResponse | GetWorksPageGenericResponse | undefined>;
+
+type DocObj = { 
+    key: string,
+    text: string[],
+    type: string,
+    name: string,
+    alternate_names: string[],
+    birth_date: string,
+    top_work: string,
+    work_count: number,
+    top_subjects: string[],
+    _version_: number 
+}
+
+export interface AuthorSearchJSONResposnse { 
+    numFound: number,
+    start: number,
+    numFoundExact: boolean,
+    docs: DocObj[]
+}
