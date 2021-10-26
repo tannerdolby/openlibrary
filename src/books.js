@@ -38,14 +38,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var axios = require("axios")["default"];
 /**
- * A class representing the Open Library Book API connections. Fetch data from
- * any of the four book APIs provided by [Open Library](https://openlibrary.org/dev/docs/api/books).
+ * A class representing the Open Library API connections. Fetch data from
+ * the Open Library REST API and Open Library APIs outlined in the [Developer Center](https://openlibrary.org/dev/docs/api/)
  */
 var OpenLibrary = /** @class */ (function () {
     function OpenLibrary() {
         this.baseUrl = "https://openlibrary.org";
         this.bookApiUrl = this.baseUrl + "/api/books";
         this.coversApiUrl = "https://covers.openlibrary.org";
+        this.authorsApiUrl = "https://authors.openlibrary.org";
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
@@ -260,7 +261,11 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
-    // Authors API - todo (author image)
+    /**
+     * Fetch complete data for an individual author by identifier and gets their Author page as ".json|.yml|.rdf".
+     * @param authorId Required parameter which specifies the identifier key for an author.
+     * @param suffix Optional parameter which specifies the
+     */
     OpenLibrary.prototype.getAuthorsPage = function (authorId, suffix) {
         if (suffix === void 0) { suffix = "json"; }
         return __awaiter(this, void 0, void 0, function () {
@@ -272,7 +277,13 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
-    OpenLibrary.prototype.GetAuthorPhoto = function (key, value, size) {
+    /**
+     * Get an author photo using OLID or ID.
+     * @param {string} key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
+     * @param {string} value The corresponding value for `key`.
+     * @param {string} size The size of the book cover image. Can be one of S, M and L for small, medium and large respectively.
+     */
+    OpenLibrary.prototype.getAuthorPhoto = function (key, value, size) {
         return __awaiter(this, void 0, void 0, function () {
             var request, response;
             return __generator(this, function (_a) {
@@ -282,7 +293,7 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        return [2 /*return*/, response];
+                        return [2 /*return*/, response && response["status"] == 200 ? response["request"]["res"]["responseUrl"] : response];
                 }
             });
         });
@@ -298,31 +309,13 @@ var OpenLibrary = /** @class */ (function () {
     return OpenLibrary;
 }());
 exports["default"] = OpenLibrary;
-var openLib = new OpenLibrary();
-// openLib.getBookCover("id", 6564962, "L").then((res: any) => {
-//     console.log(res, "RESUMESAKIII");
+// const openLibrary = new OpenLibrary();
+// openLibrary.getAuthorsPage("OL229501A").then(res => {
+//     console.log(res, "RESUMESAKI");
 // });
-var bookList = [
-    {
-        title: "The Hitch Hiker's Guide to the Galaxy",
-        id: 11464254,
-        key: "id",
-        size: "L",
-        fallback: "https://covers.openlibrary.org/b/id/11464254-L.jpg"
-    },
-    {
-        title: "Star Wars: Splinter of the Mind's Eye",
-        id: 6564962,
-        key: "id",
-        size: "L",
-        fallback: "https://ia600603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg"
-    }
-];
-// openLib.getBookCovers(bookList).then((res) => {
-//     console.log(res, "RESUMMESAKI");
+// openLibrary.getAuthorPhoto("olid", "OL229501A", "S").then(res => {
+//     console.log(res, "RESUMESAKI");
 // });
-// openLib.getIsbnPage("9780140328721", "", "json").then(res => {
-//     console.log(res, "RESUMMESAKI");
+// openLibrary.getAuthorsPage("OL23919A", "rdf").then(res => {
+//     console.log(res, "RESUMESAKI");
 // });
-// https://covers.openlibrary.org/a/olid/OL229501A-S.jpg
-// openLib.GetAuthorPhoto("olid", "OL229501A", "S");

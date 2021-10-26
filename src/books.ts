@@ -2,19 +2,21 @@ const axios = require("axios").default;
 import { GetWorksPageFileResponse, GetWorksPageGenericResponse, QueryParams, Suffix, BibKeys, RequestConfig, BookCovers, OpenLibResponse} from "./types";
 
 /**
- * A class representing the Open Library Book API connections. Fetch data from 
- * any of the four book APIs provided by [Open Library](https://openlibrary.org/dev/docs/api/books).
+ * A class representing the Open Library API connections. Fetch data from 
+ * the Open Library REST API and Open Library APIs outlined in the [Developer Center](https://openlibrary.org/dev/docs/api/)
  */
 export default class OpenLibrary {
     baseUrl: string;
     bookApiUrl: string;
     coversApiUrl: string;
+    authorsApiUrl: string;
     requestConfig: RequestConfig;
 
     constructor() {
         this.baseUrl = "https://openlibrary.org";
         this.bookApiUrl = `${this.baseUrl}/api/books`;
         this.coversApiUrl = "https://covers.openlibrary.org";
+        this.authorsApiUrl = "https://authors.openlibrary.org";
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
@@ -157,9 +159,7 @@ export default class OpenLibrary {
             }
             bibKeysStr.slice(0, -1);
         }
-
         // todo
-
         for (const field in queryParams) {
             // counter += 1;
             // if (counter == 1) {
@@ -175,17 +175,27 @@ export default class OpenLibrary {
         return response;
     }
 
-    // Authors API - todo (author image)
+    /**
+     * Fetch complete data for an individual author by identifier and gets their Author page as ".json|.yml|.rdf". 
+     * @param authorId Required parameter which specifies the identifier key for an author.
+     * @param suffix Optional parameter which specifies the 
+     */
     async getAuthorsPage(authorId: string, suffix: Suffix = "json") {
         let request: string = `${this.baseUrl}/authors/${authorId}.${suffix}`;
         let response = this.executeGetRequest(request, this.requestConfig);
         return response;
     }
 
-    async GetAuthorPhoto(key: string, value: string, size: string) {
+    /**
+     * Get an author photo using OLID or ID.
+     * @param {string} key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
+     * @param {string} value The corresponding value for `key`.
+     * @param {string} size The size of the book cover image. Can be one of S, M and L for small, medium and large respectively.
+     */
+    async getAuthorPhoto(key: string, value: string, size: string) {
         let request = `${this.coversApiUrl}/a/${key.toLowerCase()}/${value}-${size}.jpg`;
         let response = await axios.get(request, this.requestConfig);
-        return response;
+        return response && response["status"] == 200 ? response["request"]["res"]["responseUrl"] : response;
     }
 
     // Subjects API 
@@ -193,3 +203,16 @@ export default class OpenLibrary {
         // todo
     }
 }
+
+// const openLibrary = new OpenLibrary();
+// openLibrary.getAuthorsPage("OL229501A").then(res => {
+//     console.log(res, "RESUMESAKI");
+// });
+
+// openLibrary.getAuthorPhoto("olid", "OL229501A", "S").then(res => {
+//     console.log(res, "RESUMESAKI");
+// });
+
+// openLibrary.getAuthorsPage("OL23919A", "rdf").then(res => {
+//     console.log(res, "RESUMESAKI");
+// });
