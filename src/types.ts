@@ -32,7 +32,7 @@ export interface QueryParams extends QueryParamsObjIndexes {
     jscmd: string;
 }
 
-export type Suffix = "json" | "yml" | "";
+export type Suffix = "json" | "yml" | "rdf" | "";
 
 interface BibKeysObjIndexes {
     [key: string]: string | number;
