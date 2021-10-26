@@ -8,13 +8,6 @@ Install the package from [npm](https://npmjs.com) (once its published).
 npm install openlibrary
 ```
 
-## Why openlibrary?
-`openlibrary` is fast! ⚡
-
-It's written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs. There is one class [`OpenLibrary`](https://github.com/tannerdolby/openlibrary/blob/master/src/books.ts) that provides methods to easily interact with Open Library APIs.
-
-The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
-
 ## What does it do?
 The client library provides access to all of the public Open Library APIs described in the [integrations](#Integrations) section. After installing the package from npm, add it to your project:
 
@@ -22,6 +15,19 @@ The client library provides access to all of the public Open Library APIs descri
 const OpenLibrary = require("openlibrary");
 
 const openLibrary = new OpenLibrary();
+
+openLibrary.searchForAuthors("H. R. Tolken").then(res => {
+    console.log(res);
+    // { ...
+    //   docs:
+    //    [ { key: 'OL3485759A',
+    //        text: [ '/authors/OL3485759A', 'J R R Tolken' ],
+    //        type: 'author',
+    //        name: 'J R R Tolken',
+    //        top_work: 'Lord of the Rings the Film Book',
+    //        work_count: 1,
+    //        _version_: 1700758664814526500 } ] }
+});
 
 // Get a book cover image URL
 openLibrary.getBookCover("id", 6564962, "L").then(res => {
@@ -38,15 +44,14 @@ openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
     //     ...
     // }
 });
-
-// Retrieve a specific edition by identifier and/or title and return HTML
-openLibrary.getEditionsPage("OL45883W", "Fantastic_Mr._FOX").then(res => {
-    console.log(res);
-    // <html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
-    // <title>Fantastic Mr. Fox (October 1, 1988 edition) | Open Library</title>
-    // ...
-});
 ```
+
+## Why openlibrary?
+`openlibrary` is fast! ⚡
+
+It's written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs. There is one class [`OpenLibrary`](https://github.com/tannerdolby/openlibrary/blob/master/src/books.ts) that provides methods to easily interact with Open Library APIs.
+
+The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
 ## Integrations
 The `openlibrary` client library supports the following [Open Library APIs](https://openlibrary.org/developers/api):
