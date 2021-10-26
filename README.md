@@ -1,19 +1,19 @@
 # openlibrary
 A Node.js Open Library client written in TypeScript for interacting with the Open Library APIs. Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios).
 
-## Why openlibrary?
-`openlibrary` is fast! ⚡
-
-It's written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs.
-
-The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
-
 ## Installation
 Install the package from npm (once its published!).
 
 ```shell
 npm install openlibrary
 ```
+
+## Why openlibrary?
+`openlibrary` is fast! ⚡
+
+It's written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs.
+
+The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
 ## What does it do?
 The client library provides access to all of the public Open Library APIs described in the [integrations](#Integrations) section. After installing the package from npm, add it to your project:
@@ -84,5 +84,5 @@ todo
 Huge thanks to the Open Library team for providing such a robust set of public APIs.
 
 - [Open Library Developer Center / APIs](https://openlibrary.org/developers/api)
-- [openlibrary/openlibrary-client](https://github.com/internetarchive/openlibrary-client#other-client-libraries)- Python
-- [jayfajardo/openlibrary](https://github.com/jayfajardo/openlibrary) - Ruby
+- [openlibrary/openlibrary-client](https://github.com/internetarchive/openlibrary-client#other-client-libraries)
+- [jayfajardo/openlibrary](https://github.com/jayfajardo/openlibrary)
