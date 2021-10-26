@@ -23,7 +23,13 @@ const OpenLibrary = require("openlibrary");
 
 const openLibrary = new OpenLibrary();
 
-// Fetch a Works page by identifier and return a .json output
+// Get a book cover image URL
+openLibrary.getBookCover("id", 6564962, "L").then(res => {
+    console.log(res);
+    // https://ia800603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg
+});
+
+// Retrieve a specific work by identifier and return json
 openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
     console.log(res);
     // { 
@@ -33,18 +39,25 @@ openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
     // }
 });
 
-// Fetch an 'ISBN' page by identifier and return a .yml output
-openLibrary.getIsbnPage("OL45883W", "", "yml").then(res => {
+// Retrieve a specific edition by identifier and return yaml
+openLibrary.getIsbnPage("9780140328721", "", "yml").then(res => {
     console.log(res);
     // authors:
-    // -   author:
-    //         key: /authors/OL34184A
-    //     type:
-    //         key: /type/author_role
+    // -   key: /authors/OL34184A
+    // classifications: {}
     // ...
 });
 
-// Fetch an 'Editions' page (from Books API) by ID and Title and return HTML
+// Retrieve an author and their works by author identifier
+openLibrary.getAuthorsPage("OL229501A").then(res => {
+    console.log(res);
+    // { name: 'Donald Knuth',
+    //   personal_name: 'Donald Ervin Knuth',
+    //   ...
+    // }
+});
+
+// Retrieve a specific edition by identifier and/or title and return HTML
 openLibrary.getEditionsPage("OL45883W", "Fantastic_Mr._FOX").then(res => {
     console.log(res);
     // <html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
@@ -54,17 +67,17 @@ openLibrary.getEditionsPage("OL45883W", "Fantastic_Mr._FOX").then(res => {
 ```
 
 ## Integrations
-This lient supports the following [Open Library APIs](https://openlibrary.org/developers/api):
+The `openlibrary` client library supports the following [Open Library APIs](https://openlibrary.org/developers/api):
 
 - [x] Books API - Retrieve a specific work or edition by identifier
 - [x] Authors API - Retrieve an author and their works by author identifier
-- [] Subjects API (Experimental) - Fetch books by subject name
-- [] Search API (todo) - Search results for books, authors, and more
-- [] Search inside API (todo) - Search for matching text within millions of books
-- [] Partner API (todo)- Formerly the "Read" API, fetch one or more books by library identifiers (ISBNs, OCLC, LCCNs)
+- [ ] Subjects API (Experimental) - Fetch books by subject name
+- [ ] Search API (todo) - Search results for books, authors, and more
+- [ ] Search inside API (todo) - Search for matching text within millions of books
+- [ ] Partner API (todo)- Formerly the "Read" API, fetch one or more books by library identifiers (ISBNs, OCLC, LCCNs)
 - [x] Covers API - Fetch book covers by ISBN or Open Library identifier
-- [] Recent Changes API (todo) - Programatic access to changes across Open Library
-- [] REST API (todo)
+- [ ] Recent Changes API (todo) - Programatic access to changes across Open Library
+- [ ] REST API (todo)
 
 ## Methods
 Todo
