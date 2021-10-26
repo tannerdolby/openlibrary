@@ -203,16 +203,3 @@ export default class OpenLibrary {
         // todo
     }
 }
-
-// const openLibrary = new OpenLibrary();
-// openLibrary.getAuthorsPage("OL229501A").then(res => {
-//     console.log(res, "RESUMESAKI");
-// });
-
-// openLibrary.getAuthorPhoto("olid", "OL229501A", "S").then(res => {
-//     console.log(res, "RESUMESAKI");
-// });
-
-// openLibrary.getAuthorsPage("OL23919A", "rdf").then(res => {
-//     console.log(res, "RESUMESAKI");
-// });
