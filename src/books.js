@@ -45,55 +45,59 @@ var OpenLibrary = /** @class */ (function () {
     function OpenLibrary() {
         this.baseUrl = "https://openlibrary.org";
         this.bookApiUrl = this.baseUrl + "/api/books";
+        this.coversApiUrl = "https://covers.openlibrary.org";
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
-                'Accept': "text/html, text/plain, application/json, application/yaml",
+                'Accept': "text/html, text/plain, application/json, application/yaml, image/*",
                 'Accept-Encoding': 'gzip, deflate, br'
             }
         };
     }
-    OpenLibrary.prototype.executeGetRequest = function (url, suffix, reqConfig) {
-        if (suffix === void 0) { suffix = ""; }
+    OpenLibrary.prototype.executeGetRequest = function (url, reqConfig) {
         return __awaiter(this, void 0, void 0, function () {
-            var htmlResponse, fileContentResponse, e_1, e_2;
+            var response, redirectedHtml, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(suffix != "")) return [3 /*break*/, 5];
+                        redirectedHtml = "";
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 3, , 4]);
                         return [4 /*yield*/, axios.get(url, reqConfig)];
                     case 2:
-                        fileContentResponse = _a.sent();
-                        return [2 /*return*/, fileContentResponse.hasOwnProperty("data") ? fileContentResponse.data : fileContentResponse];
+                        response = _a.sent();
+                        return [2 /*return*/, response.hasOwnProperty("data") ? response.data : response];
                     case 3:
                         e_1 = _a.sent();
-                        console.error(e_1);
+                        // todo: address this axios redirect hiccup
+                        if (e_1.response.hasOwnProperty("data") && e_1.response.data) {
+                            redirectedHtml = e_1.response.data;
+                        }
+                        else {
+                            console.error({
+                                "message": "Unable to fetch HTML page intially. Axios might not have handled a redirect or the Open Library could be down.",
+                                "isAxiosError": e_1.isAxiosError,
+                                "statusCode": e_1.response.status,
+                                "responseData": e_1.response.data
+                            });
+                        }
                         return [3 /*break*/, 4];
-                    case 4: return [3 /*break*/, 8];
-                    case 5:
-                        _a.trys.push([5, 7, , 8]);
-                        return [4 /*yield*/, axios.get(url, reqConfig)];
-                    case 6:
-                        htmlResponse = _a.sent();
-                        return [2 /*return*/, htmlResponse.hasOwnProperty("data") ? htmlResponse.data : htmlResponse];
-                    case 7:
-                        e_2 = _a.sent();
-                        console.error(e_2);
-                        return [3 /*break*/, 8];
-                    case 8: return [2 /*return*/];
+                    case 4:
+                        if (redirectedHtml && redirectedHtml != "") {
+                            return [2 /*return*/, redirectedHtml];
+                        }
+                        return [2 /*return*/];
                 }
             });
         });
     };
-    // Covers API
     /**
-     * Get a single book covers image URL.
-     * @param key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
-     * @param value The corresponding value for `key`.
-     * @param size The size of the book cover image. Can be one of S, M and L for small, medium and large respectively.
+     * Get a book covers image URL from the Covers API.
+     * @param {string} key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
+     * @param {string} value The corresponding value for `key`.
+     * @param {string} size The size of the book cover image. Can be one of S, M and L for small, medium and large respectively.
+     * @returns {string} A book covers image URL.
     */
     OpenLibrary.prototype.getBookCover = function (key, value, size) {
         return __awaiter(this, void 0, void 0, function () {
@@ -101,19 +105,19 @@ var OpenLibrary = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        request = this.baseUrl + "/b/" + key + "/" + value + "-" + size + ".jpg";
+                        request = this.coversApiUrl + "/b/" + key.toLowerCase() + "/" + value + "-" + size + ".jpg";
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        return [2 /*return*/, response["status"] == 200 ? response["url"] : { "message": "Request failed", "response": response }];
+                        return [2 /*return*/, response && response["status"] == 200 ? response["request"]["res"]["responseUrl"] : response];
                 }
             });
         });
     };
     /**
-     * Get a list of book covers image URLs.
-     * @param coversObjList An array of book cover objects to return book covers for. (e.g. [{title: string, id: string | number, key: string, size: string},]
-     * @returns An array of book cover image URLs.
+     * Get a list of book cover image URLs from the Covers API.
+     * @param {BooksCovers[]} coversObjList An array of book cover objects to return book covers for. (e.g. [{title: string, id: string | number, key: string, size: string},]
+     * @returns {string[]} An array of book cover image URLs.
     */
     OpenLibrary.prototype.getBookCovers = function (coversObjList) {
         return __awaiter(this, void 0, void 0, function () {
@@ -133,7 +137,14 @@ var OpenLibrary = /** @class */ (function () {
         });
     };
     ;
-    /* Books APIs (Works, ISBN, Editions pages and configurable Books API) */
+    /**
+     * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
+     * @param {string} bookId A required parameter representing the book identifier.
+     * @param {string} bookTitle Optional parameter which specifies the 'Work' (book) title.
+     * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
+     * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
+     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     */
     OpenLibrary.prototype.getWorksPage = function (bookId, bookTitle, suffix, fullUrl) {
         if (bookTitle === void 0) { bookTitle = ""; }
         if (suffix === void 0) { suffix = ""; }
@@ -141,12 +152,20 @@ var OpenLibrary = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var request, response;
             return __generator(this, function (_a) {
-                request = bookTitle && (suffix == "" || suffix) ? this.baseUrl + "/works/" + bookId + "/" + bookTitle : this.baseUrl + "/works/" + bookId + "." + suffix;
-                response = this.executeGetRequest(fullUrl == "" ? request : fullUrl, suffix, this.requestConfig);
+                request = bookTitle && (suffix == "" || !suffix) ? this.baseUrl + "/works/" + bookId + "/" + bookTitle : this.baseUrl + "/works/" + bookId + "." + suffix;
+                response = this.executeGetRequest(fullUrl == "" ? request : fullUrl, this.requestConfig);
                 return [2 /*return*/, response];
             });
         });
     };
+    /**
+     * An alternative way to get an 'Editions' page for a specific book identifier and or title.
+     * @param {string} bookId Required parameter representing the book identifier.
+     * @param {string} bookTitle Optional parameter which specifies the 'Work' (book) title.
+     * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
+     * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
+     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     */
     OpenLibrary.prototype.getIsbnPage = function (bookId, bookTitle, suffix, fullUrl) {
         if (bookTitle === void 0) { bookTitle = ""; }
         if (suffix === void 0) { suffix = ""; }
@@ -154,12 +173,20 @@ var OpenLibrary = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var request, response;
             return __generator(this, function (_a) {
-                request = bookTitle && (suffix == "" || suffix) ? this.baseUrl + "/isbn/" + bookId : this.baseUrl + "/isbn/" + bookId + "." + suffix;
-                response = this.executeGetRequest(request, suffix, this.requestConfig);
+                request = bookTitle && (suffix == "" || !suffix) ? this.baseUrl + "/isbn/" + bookId : this.baseUrl + "/isbn/" + bookId + "." + suffix;
+                response = this.executeGetRequest(request, this.requestConfig);
                 return [2 /*return*/, response];
             });
         });
     };
+    /**
+     * Fetch an 'Editions' page for a specific book based on identifier and or title.
+     * @param {string} bookId Required parameter representing the book identifier.
+     * @param {string} bookTitle Optional parameter which specifies the 'Edition' (book) title.
+     * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
+     * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Editions' API.
+     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     */
     OpenLibrary.prototype.getEditionsPage = function (bookId, bookTitle, suffix, fullUrl) {
         if (bookTitle === void 0) { bookTitle = ""; }
         if (suffix === void 0) { suffix = ""; }
@@ -167,12 +194,25 @@ var OpenLibrary = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var request, response;
             return __generator(this, function (_a) {
-                request = bookTitle && (suffix == "" || suffix) ? this.baseUrl + "/books/" + bookId + "/" + bookTitle : this.baseUrl + "/books/" + bookId + "." + suffix;
-                response = this.executeGetRequest(request, suffix, this.requestConfig);
+                request = bookTitle && (suffix == "" || !suffix) ? this.baseUrl + "/books/" + bookId + "/" + bookTitle : this.baseUrl + "/books/" + bookId + "." + suffix;
+                response = this.executeGetRequest(request, this.requestConfig);
                 return [2 /*return*/, response];
             });
         });
     };
+    /**
+     * Use the configurable 'Books' endpoint which allows requesting information on one or more books
+     * using ISBNs, OCLC Numbers, LCCNs and OLIDs (Open Library IDs).
+     * @param {string} bookId Required parameter representing the book identifier.
+     * @param {string} bookTitle Optional parameter which specifies the 'Edition' (book) title.
+     * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
+     * @param bibkeys
+     * @param format
+     * @param callback
+     * @param jscmd
+     * @param fullUrl
+     * @returns
+     */
     OpenLibrary.prototype.getBooksPage = function (bookId, bookTitle, suffix, bibkeys, format, callback, jscmd, fullUrl) {
         if (bookTitle === void 0) { bookTitle = ""; }
         if (suffix === void 0) { suffix = ""; }
@@ -205,6 +245,7 @@ var OpenLibrary = /** @class */ (function () {
                     }
                     bibKeysStr.slice(0, -1);
                 }
+                // todo
                 for (field in queryParams) {
                     // counter += 1;
                     // if (counter == 1) {
@@ -214,24 +255,39 @@ var OpenLibrary = /** @class */ (function () {
                     // }
                 }
                 request = bookTitle && (suffix == "" || suffix) ? this.baseUrl + "/books/" + bookId + "/" + bookTitle : this.baseUrl + "/books/" + bookId + "." + suffix;
-                response = this.executeGetRequest(request, suffix, this.requestConfig);
+                response = this.executeGetRequest(request, this.requestConfig);
                 return [2 /*return*/, response];
             });
         });
     };
-    // Authors API
+    // Authors API - todo (author image)
     OpenLibrary.prototype.getAuthorsPage = function (authorId, suffix) {
         if (suffix === void 0) { suffix = "json"; }
         return __awaiter(this, void 0, void 0, function () {
             var request, response;
             return __generator(this, function (_a) {
                 request = this.baseUrl + "/authors/" + authorId + "." + suffix;
-                response = this.executeGetRequest(request, suffix, this.requestConfig);
+                response = this.executeGetRequest(request, this.requestConfig);
                 return [2 /*return*/, response];
             });
         });
     };
-    // Subjects API
+    OpenLibrary.prototype.GetAuthorPhoto = function (key, value, size) {
+        return __awaiter(this, void 0, void 0, function () {
+            var request, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        request = this.coversApiUrl + "/a/" + key.toLowerCase() + "/" + value + "-" + size + ".jpg";
+                        return [4 /*yield*/, axios.get(request, this.requestConfig)];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/, response];
+                }
+            });
+        });
+    };
+    // Subjects API 
     OpenLibrary.prototype.getSubjectsPage = function () {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
@@ -243,13 +299,30 @@ var OpenLibrary = /** @class */ (function () {
 }());
 exports["default"] = OpenLibrary;
 var openLib = new OpenLibrary();
-// https://openlibrary.org/authors/OL23919A.json
-// openLib.getAuthorsPage("OL23919A").then((res: any) => {
-//     console.log(res, "RESUMESAKI");
+// openLib.getBookCover("id", 6564962, "L").then((res: any) => {
+//     console.log(res, "RESUMESAKIII");
 // });
-// openLib.getIsbnPage("OL45883W", "", "yml").then((res) => {
-//     console.log(res, "RESUMESAKI");
+var bookList = [
+    {
+        title: "The Hitch Hiker's Guide to the Galaxy",
+        id: 11464254,
+        key: "id",
+        size: "L",
+        fallback: "https://covers.openlibrary.org/b/id/11464254-L.jpg"
+    },
+    {
+        title: "Star Wars: Splinter of the Mind's Eye",
+        id: 6564962,
+        key: "id",
+        size: "L",
+        fallback: "https://ia600603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg"
+    }
+];
+// openLib.getBookCovers(bookList).then((res) => {
+//     console.log(res, "RESUMMESAKI");
 // });
-// openLib.getWorksPage("OL45883W", "Fantastic_Mr._FOX").then((res) => {
-//     console.log(res, "RESUMESAKI");
+// openLib.getIsbnPage("9780140328721", "", "json").then(res => {
+//     console.log(res, "RESUMMESAKI");
 // });
+// https://covers.openlibrary.org/a/olid/OL229501A-S.jpg
+// openLib.GetAuthorPhoto("olid", "OL229501A", "S");
