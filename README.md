@@ -64,17 +64,17 @@ The `openlibrary` client library supports the following [Open Library APIs](http
 ## Methods
 Todo add documentation
 
-### getEditionsPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="")
+#### getEditionsPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="")
 Fetch an 'Editions' page for a specific book based on identifier and or title.
 
 `openLibrary.getEditionsPage("OL7353617M", "", "yml").then(res => { console.log(res) });`
 
-### getAuthorsPage(authorId: string, suffix: Suffix = "json")
+#### getAuthorsPage(authorId: string, suffix: Suffix = "json")
 Access data on an individual author.
 
 `openLibrary.getAuthorsPage("OL23919A", "yml").then(res => { console.log(res) });`
 
-### getAuthorPhoto(key: string, value: string, size: string)
+#### getAuthorPhoto(key: string, value: string, size: string)
 Access an author photo using OLID or ID.
 
 `openLibrary.getAuthorPhoto("olid", "OL229501A", "S").then(res => { console.log(res) });`
