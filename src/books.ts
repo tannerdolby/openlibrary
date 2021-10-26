@@ -1,5 +1,5 @@
 const axios = require("axios").default;
-import { GetWorksPageFileResponse, GetWorksPageGenericResponse, QueryParams, Suffix, BibKeys, RequestConfig, BookCovers, OpenLibResponse} from "./types";
+import { GetWorksPageFileResponse, GetWorksPageGenericResponse, QueryParams, Suffix, BibKeys, RequestConfig, BookCovers, OpenLibResponse, AuthorSearchJSONResposnse} from "./types";
 
 /**
  * A class representing the Open Library API connections. Fetch data from 
@@ -10,6 +10,7 @@ export default class OpenLibrary {
     bookApiUrl: string;
     coversApiUrl: string;
     authorsApiUrl: string;
+    searchApiUrl: string;
     requestConfig: RequestConfig;
 
     constructor() {
@@ -17,6 +18,7 @@ export default class OpenLibrary {
         this.bookApiUrl = `${this.baseUrl}/api/books`;
         this.coversApiUrl = "https://covers.openlibrary.org";
         this.authorsApiUrl = "https://authors.openlibrary.org";
+        this.searchApiUrl = `${this.baseUrl}/search`;
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
@@ -198,8 +200,40 @@ export default class OpenLibrary {
         return response && response["status"] == 200 ? response["request"]["res"]["responseUrl"] : response;
     }
 
+    /**
+     * Search for an author by specifying a query parameter such as name.
+     * @param {string} queryParam Required query parameter string to search for an author. Can be a single query for name e.g. "twain" or multiple querys "twain&limit"
+     * @returns An authors information as JSON if found. 
+     */
+    async searchForAuthors(queryParam: string) {
+        let request: string = `${this.searchApiUrl}/authors.json?q=${queryParam.replace(/\s+/, "%20")}`;
+        let response = await axios.get(request, this.requestConfig);
+        let data: AuthorSearchJSONResposnse = response["data"];
+        return response["status"] == 200 ? data : response;
+    }
+
     // Subjects API 
     async getSubjectsPage() {
         // todo
+    }
+
+    /**
+     * Use the Search API to specify a solr query and return the results found.
+     * @param queryParam Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
+     * @param fields Parameter which specifies the fields to get back from solr. Use the special value * to get all fields (although be prepared for a very large response!)
+     * @returns A JSON response containing the search results returned from the solr query.
+     */
+    async search(queryParam: string, fields: string = "", archive: boolean = false) {
+        // http://openlibrary.org/search.json?q=the+lord+of+the+rings&page=2
+        let query: string = !queryParam.split("").includes("=")  ? `q=${queryParam.replace(/\s+/, "+")}` : queryParam;
+        let fieldStr: string = fields ? `fields=${fields}` : "";
+        let isFromArchive: string = archive ? "availability" : "";
+        let args: string[] = [query, fieldStr, isFromArchive];
+        let qs: string = "";
+        args.forEach(arg => qs += `${arg},`);
+        qs.slice(0, -1);
+        let request: string = `${this.searchApiUrl}.json?${qs}`;
+        let response = await axios.get(request, this.requestConfig);
+        return response;
     }
 }

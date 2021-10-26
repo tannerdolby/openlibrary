@@ -47,6 +47,7 @@ var OpenLibrary = /** @class */ (function () {
         this.bookApiUrl = this.baseUrl + "/api/books";
         this.coversApiUrl = "https://covers.openlibrary.org";
         this.authorsApiUrl = "https://authors.openlibrary.org";
+        this.searchApiUrl = this.baseUrl + "/search";
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
@@ -298,6 +299,27 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Search for an author by specifying a query parameter such as name.
+     * @param {string} queryParam Required query parameter string to search for an author. Can be a single query for name e.g. "twain" or multiple querys "twain&limit"
+     * @returns An authors information as JSON if found.
+     */
+    OpenLibrary.prototype.searchForAuthors = function (queryParam) {
+        return __awaiter(this, void 0, void 0, function () {
+            var request, response, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        request = this.searchApiUrl + "/authors.json?q=" + queryParam.replace(/\s+/, "%20");
+                        return [4 /*yield*/, axios.get(request, this.requestConfig)];
+                    case 1:
+                        response = _a.sent();
+                        data = response["data"];
+                        return [2 /*return*/, response["status"] == 200 ? data : response];
+                }
+            });
+        });
+    };
     // Subjects API 
     OpenLibrary.prototype.getSubjectsPage = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -306,6 +328,40 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    /**
+     * Use the Search API to specify a solr query and return the results found.
+     * @param queryParam Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
+     * @param fields Parameter which specifies the fields to get back from solr. Use the special value * to get all fields (although be prepared for a very large response!)
+     * @returns A JSON response containing the search results returned from the solr query.
+     */
+    OpenLibrary.prototype.search = function (queryParam, fields, archive) {
+        if (fields === void 0) { fields = ""; }
+        if (archive === void 0) { archive = false; }
+        return __awaiter(this, void 0, void 0, function () {
+            var query, fieldStr, isFromArchive, args, qs, request, response;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        query = !queryParam.split("").includes("=") ? "q=" + queryParam.replace(/\s+/, "%20") : queryParam;
+                        fieldStr = fields ? "fields=" + fields : "";
+                        isFromArchive = archive ? "availability" : "";
+                        args = [query, fieldStr, isFromArchive];
+                        qs = "";
+                        args.forEach(function (arg) { return qs += arg + ","; });
+                        qs.slice(0, -1);
+                        request = this.searchApiUrl + ".json?" + qs;
+                        return [4 /*yield*/, axios.get(request, this.requestConfig)];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/, response];
+                }
+            });
+        });
+    };
     return OpenLibrary;
 }());
 exports["default"] = OpenLibrary;
+var openlibrary = new OpenLibrary();
+openlibrary.searchForAuthors("J R R Tolken").then(function (res) {
+    console.log(res);
+});
