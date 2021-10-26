@@ -1,5 +1,5 @@
 # openlibrary
-A Node.js Open Library client written in TypeScript for interacting with the Open Library APIs. Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios).
+A Node.js Open Library client for interacting with the Open Library APIs. Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios).
 
 ## Installation
 Install the package from npm (once its published!).
