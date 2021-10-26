@@ -39,24 +39,6 @@ openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
     // }
 });
 
-// Retrieve a specific edition by identifier and return yaml
-openLibrary.getIsbnPage("9780140328721", "", "yml").then(res => {
-    console.log(res);
-    // authors:
-    // -   key: /authors/OL34184A
-    // classifications: {}
-    // ...
-});
-
-// Retrieve an author and their works by author identifier
-openLibrary.getAuthorsPage("OL229501A").then(res => {
-    console.log(res);
-    // { name: 'Donald Knuth',
-    //   personal_name: 'Donald Ervin Knuth',
-    //   ...
-    // }
-});
-
 // Retrieve a specific edition by identifier and/or title and return HTML
 openLibrary.getEditionsPage("OL45883W", "Fantastic_Mr._FOX").then(res => {
     console.log(res);
@@ -80,7 +62,23 @@ The `openlibrary` client library supports the following [Open Library APIs](http
 - [ ] REST API (todo)
 
 ## Methods
-Todo
+Todo add documentation
+
+### getEditionsPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="")
+Fetch an 'Editions' page for a specific book based on identifier and or title.
+
+`openLibrary.getEditionsPage("OL7353617M", "", "yml").then(res => { console.log(res) });`
+
+### getAuthorsPage(authorId: string, suffix: Suffix = "json")
+Access data on an individual author.
+
+`openLibrary.getAuthorsPage("OL23919A", "yml").then(res => { console.log(res) });`
+
+### getAuthorPhoto(key: string, value: string, size: string)
+Access an author photo using OLID or ID.
+
+`openLibrary.getAuthorPhoto("olid", "OL229501A", "S").then(res => { console.log(res) });`
+
 
 ## Testing
 Jest is the test framework used. Run all of the unit tests locally with:
@@ -94,7 +92,7 @@ npm run test
 todo
 
 ## Kudos & Other Client Libraries
-Shoutout to the Open Library team for providing such a robust set of public APIs.
+Shoutout to the Open Library team for providing a robust set of public APIs. The official Python client library by `openlibrary` can be found below along with a link to an unofficial Open Library Ruby client.
 
 - [Open Library Developer Center / APIs](https://openlibrary.org/developers/api)
 - [openlibrary/openlibrary-client](https://github.com/internetarchive/openlibrary-client#other-client-libraries)
