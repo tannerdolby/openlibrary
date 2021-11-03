@@ -1,5 +1,5 @@
 # openlibrary 
-A Node.js Open Library client for interacting with the [Open Library REST API](http://openlibrary.org/dev/docs/restful_api) and Open Library APIs listed in the [Open Library Developer Center](https://openlibrary.org/developers/api). Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios). 
+A Node.js Open Library client written in TypeScript for interacting with the Open Library APIs listed in the [Open Library Developer Center](https://openlibrary.org/developers/api). Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios). 
 
 ## Installation
 Install the package from [npm](https://npmjs.com) (once its published).
@@ -61,7 +61,7 @@ The `openlibrary` client library supports the following [Open Library APIs](http
 - [ ] Subjects API (Experimental) - Fetch books by subject name
 - [x] Search API (todo) - Search results for books, authors, and more
 - [ ] Search inside API (todo) - Search for matching text within millions of books
-- [ ] Partner API (todo)- Formerly the "Read" API, fetch one or more books by library identifiers (ISBNs, OCLC, LCCNs)
+- [x] Partner API - Formerly the "Read" API, fetch one or more books by library identifiers (ISBNs, OCLC, LCCNs)
 - [x] Covers API - Fetch book covers by ISBN or Open Library identifier
 - [ ] Recent Changes API (todo) - Programatic access to changes across Open Library
 - [ ] REST API (todo)
