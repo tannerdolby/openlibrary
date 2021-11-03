@@ -14,7 +14,7 @@ test("A request to the 'Covers' API for a single Work returns the expect image U
 });
 
 test("A request to the 'Covers' API for mutliple Works returns the expect array of image URLs", () => {
-    let response = openLibrary.getBookCovers([
+    let books = [
         {
           title: "The Hitch Hiker's Guide to the Galaxy",
           id: 11464254,
@@ -29,7 +29,8 @@ test("A request to the 'Covers' API for mutliple Works returns the expect array 
           size: "L",
           fallback: "https://ia600603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg"
         }
-    ]);
+    ];
+    let response = openLibrary.getBookCovers(books);
     response.then(res => {
         let opts = [
         'https://ia600603.us.archive.org/view_archive.php?archive=/24/items/olcovers656/olcovers656-L.zip&file=6564962-L.jpg',
