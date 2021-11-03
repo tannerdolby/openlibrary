@@ -262,6 +262,7 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    // ----------------- AUTHORS APIs -----------------
     /**
      * Fetch complete data for an individual author by identifier and gets their Author page as ".json|.yml|.rdf".
      * @param authorId Required parameter which specifies the identifier key for an author.
@@ -320,6 +321,38 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    /**
+     *
+     * @param authorId The identifier for an author. (e.g. OL23919A)
+     * @param limit The number of works to return for an author. Default is 50.
+     * @param offset The number of works to offset for pagination. Default is 50.
+     * @returns {JSON} Returns the works for an author as JSON.
+     */
+    OpenLibrary.prototype.getAuthorWorks = function (authorId, limit, offset) {
+        if (limit === void 0) { limit = 0; }
+        if (offset === void 0) { offset = 0; }
+        return __awaiter(this, void 0, void 0, function () {
+            var request, response, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        request = this.baseUrl + "/authors/" + authorId + "/works.json";
+                        if (limit != 0) {
+                            request += "?limit=" + limit;
+                        }
+                        else if (offset != 0) {
+                            request += "?offset=" + offset;
+                        }
+                        return [4 /*yield*/, axios.get(request, this.requestConfig)];
+                    case 1:
+                        response = _a.sent();
+                        data = response["data"];
+                        return [2 /*return*/, response["status"] == 200 ? data : response];
+                }
+            });
+        });
+    };
+    // ----------------- END AUTHORS API -----------------
     // Subjects API 
     OpenLibrary.prototype.getSubjectsPage = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -342,7 +375,7 @@ var OpenLibrary = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        query = !queryParam.split("").includes("=") ? "q=" + queryParam.replace(/\s+/, "%20") : queryParam;
+                        query = !queryParam.split("").includes("=") ? "q=" + queryParam.replace(/\s+/, "+") : queryParam;
                         fieldStr = fields ? "fields=" + fields : "";
                         isFromArchive = archive ? "availability" : "";
                         args = [query, fieldStr, isFromArchive];
@@ -361,7 +394,10 @@ var OpenLibrary = /** @class */ (function () {
     return OpenLibrary;
 }());
 exports["default"] = OpenLibrary;
-var openlibrary = new OpenLibrary();
-openlibrary.searchForAuthors("J R R Tolken").then(function (res) {
-    console.log(res);
-});
+var openLibrary = new OpenLibrary();
+// // https://openlibrary.org/authors/OL1394244A/works.json?limit=100
+// openLibrary.getAuthorWorks("OL1394244A", 1).then(res => {
+//     console.log(Object.keys(res), "RESUMESAKI");
+//     console.log(res, "FOO");
+//     // console.log(Object.keys(res["entries"][0]));
+// });

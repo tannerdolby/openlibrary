@@ -145,3 +145,40 @@ export interface AuthorSearchJSONResposnse {
     numFoundExact: boolean,
     docs: DocObj[]
 }
+
+type GetAuthorWorksAuthorsType = {
+    type: {
+        key: string
+    },
+    author: {
+        key: string
+    }
+}
+
+type TypeValuePair = { type: string, value: string};
+
+type AuthorWorksEntry = {
+    type: { key: string },
+    title: string,
+    authors: GetAuthorWorksAuthorsType[],
+    covers: number[],
+    key: string,
+    latest_revision: number,
+    revision: number;
+    created: TypeValuePair
+    last_modified: TypeValuePair
+};
+
+export interface GetAuthorWorksResponse {
+    links: {
+        self: string,
+        author: string,
+        next: string
+    },
+    size: number,
+    entries: AuthorWorksEntry[]
+}
+
+export interface OpenLibraryResponse extends Response {
+    data: GetAuthorWorksResponse
+}

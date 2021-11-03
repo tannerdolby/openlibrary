@@ -1,5 +1,17 @@
 const axios = require("axios").default;
-import { GetWorksPageFileResponse, GetWorksPageGenericResponse, QueryParams, Suffix, BibKeys, RequestConfig, BookCovers, OpenLibResponse, AuthorSearchJSONResposnse} from "./types";
+import { 
+    GetWorksPageFileResponse, 
+    GetWorksPageGenericResponse, 
+    QueryParams, 
+    Suffix, 
+    BibKeys, 
+    RequestConfig, 
+    BookCovers, 
+    OpenLibResponse, 
+    AuthorSearchJSONResposnse,
+    GetAuthorWorksResponse,
+    OpenLibraryResponse
+} from "./types";
 
 /**
  * A class representing the Open Library API connections. Fetch data from 
@@ -177,6 +189,7 @@ export default class OpenLibrary {
         return response;
     }
 
+    // ----------------- AUTHORS APIs -----------------
     /**
      * Fetch complete data for an individual author by identifier and gets their Author page as ".json|.yml|.rdf". 
      * @param authorId Required parameter which specifies the identifier key for an author.
@@ -202,15 +215,39 @@ export default class OpenLibrary {
 
     /**
      * Search for an author by specifying a query parameter such as name.
-     * @param {string} queryParam Required query parameter string to search for an author. Can be a single query for name e.g. "twain" or multiple querys "twain&limit"
+     * @param {string} query The query parameter string to search for an author. Can be a single query for name e.g. "twain" or multiple querys "twain&limit=2"
      * @returns An authors information as JSON if found. 
      */
-    async searchForAuthors(queryParam: string) {
-        let request: string = `${this.searchApiUrl}/authors.json?q=${queryParam.replace(/\s+/, "%20")}`;
+    async searchForAuthors(query: string) {
+        let request: string = `${this.searchApiUrl}/authors.json?q=${query.replace(/\s+/, "%20")}`;
         let response = await axios.get(request, this.requestConfig);
         let data: AuthorSearchJSONResposnse = response["data"];
+
         return response["status"] == 200 ? data : response;
     }
+
+    /**
+     * 
+     * @param authorId The identifier for an author. (e.g. OL23919A)
+     * @param limit The number of works to return for an author. Default is 50.
+     * @param offset The number of works to offset for pagination. Default is 50.
+     * @returns {JSON} Returns the works for an author as JSON.
+     */
+    async getAuthorWorks(authorId: string, limit: number = 0, offset: number = 0) {
+        let request = `${this.baseUrl}/authors/${authorId}/works.json`;
+        if (limit != 0) {
+            request += `?limit=${limit}`;
+        } else if (offset != 0) {
+            request += `?offset=${offset}`;
+        }
+        let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
+        let data: GetAuthorWorksResponse = response["data"];
+
+        return response["status"] == 200 ? data : response;
+    }
+
+    // ----------------- END AUTHORS API -----------------
+
 
     // Subjects API 
     async getSubjectsPage() {
@@ -237,3 +274,11 @@ export default class OpenLibrary {
         return response;
     }
 }
+
+const openLibrary = new OpenLibrary();
+// // https://openlibrary.org/authors/OL1394244A/works.json?limit=100
+// openLibrary.getAuthorWorks("OL1394244A", 1).then(res => {
+//     console.log(Object.keys(res), "RESUMESAKI");
+//     console.log(res, "FOO");
+//     // console.log(Object.keys(res["entries"][0]));
+// });
