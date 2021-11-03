@@ -179,6 +179,9 @@ export interface GetAuthorWorksResponse {
     entries: AuthorWorksEntry[]
 }
 
+// todo add | for other types of Open Library response data
 export interface OpenLibraryResponse extends Response {
-    data: GetAuthorWorksResponse
+    data: {}
 }
+
+export type OpenLibraryIDTypes = "isbn" | "lccn" | "oclc" | "olid";
