@@ -10,7 +10,8 @@ import {
     OpenLibResponse, 
     AuthorSearchJSONResposnse,
     GetAuthorWorksResponse,
-    OpenLibraryResponse
+    OpenLibraryResponse,
+    OpenLibraryIDTypes
 } from "./types";
 
 /**
@@ -234,7 +235,7 @@ export default class OpenLibrary {
      * @returns {JSON} Returns the works for an author as JSON.
      */
     async getAuthorWorks(authorId: string, limit: number = 0, offset: number = 0) {
-        let request = `${this.baseUrl}/authors/${authorId}/works.json`;
+        let request: string = `${this.baseUrl}/authors/${authorId}/works.json`;
         if (limit != 0) {
             request += `?limit=${limit}`;
         } else if (offset != 0) {
@@ -270,15 +271,29 @@ export default class OpenLibrary {
         args.forEach(arg => qs += `${arg},`);
         qs.slice(0, -1);
         let request: string = `${this.searchApiUrl}.json?${qs}`;
-        let response = await axios.get(request, this.requestConfig);
-        return response;
+        let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
+        let data = response["data"];
+        return response["status"] == 200 ? data : response;
+    }
+
+    // --------- Partner API (Formerly the Read API) --------
+    /**
+     * To request information about readable versions of a single book edition.
+     * @param idType The Open Library identifier type. Can be 'isbn', 'lccn', 'oclc' or 'olid'.
+     * @param {string|number} idValue The actual numeric Open identifier.
+     * @returns The JSON hash containing readable versions of a single book.
+     */
+    async getReadableVersion(idType: OpenLibraryIDTypes, idValue: string | number) {
+        if (typeof idValue == "number") idValue = `${idValue}`;
+        let request: string = `https://openlibrary.org/api/volumes/brief/${idType}/${idValue}.json`;
+        let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
+        let data = response["data"];
+        return response["status"] == 200 ? data : response;
+
+    }
+
+    // todo
+    async getReadableVersions(requestList: string | []) {
+        let request = `http://openlibrary.org/api/volumes/brief/json/${requestList}`;
     }
 }
-
-const openLibrary = new OpenLibrary();
-// // https://openlibrary.org/authors/OL1394244A/works.json?limit=100
-// openLibrary.getAuthorWorks("OL1394244A", 1).then(res => {
-//     console.log(Object.keys(res), "RESUMESAKI");
-//     console.log(res, "FOO");
-//     // console.log(Object.keys(res["entries"][0]));
-// });

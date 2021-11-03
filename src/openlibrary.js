@@ -302,16 +302,16 @@ var OpenLibrary = /** @class */ (function () {
     };
     /**
      * Search for an author by specifying a query parameter such as name.
-     * @param {string} queryParam Required query parameter string to search for an author. Can be a single query for name e.g. "twain" or multiple querys "twain&limit"
+     * @param {string} query The query parameter string to search for an author. Can be a single query for name e.g. "twain" or multiple querys "twain&limit=2"
      * @returns An authors information as JSON if found.
      */
-    OpenLibrary.prototype.searchForAuthors = function (queryParam) {
+    OpenLibrary.prototype.searchForAuthors = function (query) {
         return __awaiter(this, void 0, void 0, function () {
             var request, response, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        request = this.searchApiUrl + "/authors.json?q=" + queryParam.replace(/\s+/, "%20");
+                        request = this.searchApiUrl + "/authors.json?q=" + query.replace(/\s+/, "%20");
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
@@ -371,7 +371,7 @@ var OpenLibrary = /** @class */ (function () {
         if (fields === void 0) { fields = ""; }
         if (archive === void 0) { archive = false; }
         return __awaiter(this, void 0, void 0, function () {
-            var query, fieldStr, isFromArchive, args, qs, request, response;
+            var query, fieldStr, isFromArchive, args, qs, request, response, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -386,7 +386,33 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        return [2 /*return*/, response];
+                        data = response["data"];
+                        return [2 /*return*/, response["status"] == 200 ? data : response];
+                }
+            });
+        });
+    };
+    // --------- Partner API (Formerly the Read API) --------
+    /**
+     * To request information about readable versions of a single book edition.
+     * @param idType The Open Library identifier type. Can be 'isbn', 'lccn', 'oclc' or 'olid'.
+     * @param {string|number} idValue The actual numeric Open identifier.
+     * @returns The JSON hash containing readable versions of a single book.
+     */
+    OpenLibrary.prototype.getReadableBookVersion = function (idType, idValue) {
+        return __awaiter(this, void 0, void 0, function () {
+            var request, response, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (typeof idValue == "number")
+                            idValue = "" + idValue;
+                        request = "https://openlibrary.org/api/volumes/brief/" + idType + "/" + idValue + ".json";
+                        return [4 /*yield*/, axios.get(request, this.requestConfig)];
+                    case 1:
+                        response = _a.sent();
+                        data = response["data"];
+                        return [2 /*return*/, response["status"] == 200 ? data : response];
                 }
             });
         });
@@ -400,4 +426,7 @@ var openLibrary = new OpenLibrary();
 //     console.log(Object.keys(res), "RESUMESAKI");
 //     console.log(res, "FOO");
 //     // console.log(Object.keys(res["entries"][0]));
+// });
+// openLibrary.getReadableBookVersion("isbn", "0596156715").then((res) => {
+//     console.log(res, "RESUMESAKI");
 // });
