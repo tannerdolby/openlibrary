@@ -394,12 +394,12 @@ var OpenLibrary = /** @class */ (function () {
     };
     // --------- Partner API (Formerly the Read API) --------
     /**
-     * To request information about readable versions of a single book edition.
+     * Request information about readable versions of a single book edition.
      * @param idType The Open Library identifier type. Can be 'isbn', 'lccn', 'oclc' or 'olid'.
      * @param {string|number} idValue The actual numeric Open identifier.
      * @returns The JSON hash containing readable versions of a single book.
      */
-    OpenLibrary.prototype.getReadableBookVersion = function (idType, idValue) {
+    OpenLibrary.prototype.getReadableVersion = function (idType, idValue) {
         return __awaiter(this, void 0, void 0, function () {
             var request, response, data;
             return __generator(this, function (_a) {
@@ -417,16 +417,32 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    // todo
+    /**
+     * Request information about readable versions of mulitple books. This is the multi request format.
+     * @param requestList A <request-list> is a list of <request>s, separated by '|'. [Open Library Docs](https://openlibrary.org/dev/docs/api/read)
+     * @returns The return value is a hash, with each successful <request> as keys. Expect A JSON response containing the readable versions for the book identifiers supplied in the request list.
+     */
+    OpenLibrary.prototype.getReadableVersions = function (requestList) {
+        return __awaiter(this, void 0, void 0, function () {
+            var request, response, data;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        request = "http://openlibrary.org/api/volumes/brief/json/" + requestList;
+                        return [4 /*yield*/, axios.get(request, this.requestConfig)];
+                    case 1:
+                        response = _a.sent();
+                        data = response["data"];
+                        return [2 /*return*/, response["status"] ? data : response];
+                }
+            });
+        });
+    };
     return OpenLibrary;
 }());
 exports["default"] = OpenLibrary;
-var openLibrary = new OpenLibrary();
-// // https://openlibrary.org/authors/OL1394244A/works.json?limit=100
-// openLibrary.getAuthorWorks("OL1394244A", 1).then(res => {
-//     console.log(Object.keys(res), "RESUMESAKI");
-//     console.log(res, "FOO");
-//     // console.log(Object.keys(res["entries"][0]));
-// });
-// openLibrary.getReadableBookVersion("isbn", "0596156715").then((res) => {
-//     console.log(res, "RESUMESAKI");
+// const openLibrary = new OpenLibrary();
+// openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then(res => {
+//     console.log(res, "RESUMMESAKI");
 // });

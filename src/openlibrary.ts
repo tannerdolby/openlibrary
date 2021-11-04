@@ -242,7 +242,7 @@ export default class OpenLibrary {
             request += `?offset=${offset}`;
         }
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
-        let data: GetAuthorWorksResponse = response["data"];
+        let data = response["data"];
 
         return response["status"] == 200 ? data : response;
     }
@@ -278,7 +278,7 @@ export default class OpenLibrary {
 
     // --------- Partner API (Formerly the Read API) --------
     /**
-     * To request information about readable versions of a single book edition.
+     * Request information about readable versions of a single book edition.
      * @param idType The Open Library identifier type. Can be 'isbn', 'lccn', 'oclc' or 'olid'.
      * @param {string|number} idValue The actual numeric Open identifier.
      * @returns The JSON hash containing readable versions of a single book.
@@ -293,7 +293,23 @@ export default class OpenLibrary {
     }
 
     // todo
+    /**
+     * Request information about readable versions of mulitple books. This is the multi request format.
+     * @param requestList A <request-list> is a list of <request>s, separated by '|'. [Open Library Docs](https://openlibrary.org/dev/docs/api/read)
+     * @returns The return value is a hash, with each successful <request> as keys. Expect A JSON response containing the readable versions for the book identifiers supplied in the request list.
+     */
     async getReadableVersions(requestList: string | []) {
+        // a string of formatted items, or an array (preferred)
+        // the request list below contains two <request>'s
+        // mock req: /json/id:1;lccn:50006784|olid:OL6179000M;lccn:55011330
         let request = `http://openlibrary.org/api/volumes/brief/json/${requestList}`;
+        let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
+        let data = response["data"];
+        return response["status"] ? data : response;
     }
 }
+
+// const openLibrary = new OpenLibrary();
+// openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then(res => {
+//     console.log(res, "RESUMMESAKI");
+// });
