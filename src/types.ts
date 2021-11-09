@@ -124,26 +124,27 @@ export type BookCovers = {
     size: string;
 }
 
-export type OpenLibResponse = Promise<string | GetWorksPageFileResponse | GetWorksPageGenericResponse | undefined>;
+export type OpenLibHTMLOrFileResponse = Promise<string | GetWorksPageFileResponse | GetWorksPageGenericResponse | undefined>;
 
 type DocObj = { 
-    key: string,
-    text: string[],
-    type: string,
-    name: string,
-    alternate_names: string[],
-    birth_date: string,
-    top_work: string,
-    work_count: number,
-    top_subjects: string[],
-    _version_: number 
+    key: string;
+    text: string[];
+    type: string;
+    name: string;
+    alternate_names: string[];
+    birth_date: string;
+    top_work: string;
+    work_count: number;
+    top_subjects: string[];
+    _version_: number;
 }
 
 export interface AuthorSearchJSONResposnse { 
-    numFound: number,
-    start: number,
-    numFoundExact: boolean,
-    docs: DocObj[]
+    numFound: number;
+    start: number;
+    numFoundExact: boolean;
+    docs: DocObj[];
+    data: {}
 }
 
 type GetAuthorWorksAuthorsType = {
@@ -179,9 +180,14 @@ export interface GetAuthorWorksResponse {
     entries: AuthorWorksEntry[]
 }
 
-// todo add | for other types of Open Library response data
+// todo: better define this OpenLibraryResponse type
 export interface OpenLibraryResponse extends Response {
-    data: {}
+    data: {};
+    request: {
+        res: {
+            responseUrl: string;
+        }
+    };
 }
 
 export type OpenLibraryIDTypes = "isbn" | "lccn" | "oclc" | "olid";

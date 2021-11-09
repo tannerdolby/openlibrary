@@ -103,7 +103,7 @@ var OpenLibrary = /** @class */ (function () {
     */
     OpenLibrary.prototype.getBookCover = function (key, value, size) {
         return __awaiter(this, void 0, void 0, function () {
-            var request, response;
+            var request, response, url;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -111,7 +111,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        return [2 /*return*/, response && response["status"] == 200 ? response["request"]["res"]["responseUrl"] : response];
+                        url = response.request.res.responseUrl;
+                        return [2 /*return*/, response && response["status"] == 200 ? url : response];
                 }
             });
         });
@@ -145,7 +146,7 @@ var OpenLibrary = /** @class */ (function () {
      * @param {string} bookTitle Optional parameter which specifies the 'Work' (book) title.
      * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
      * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
-     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
     OpenLibrary.prototype.getWorksPage = function (bookId, bookTitle, suffix, fullUrl) {
         if (bookTitle === void 0) { bookTitle = ""; }
@@ -166,7 +167,7 @@ var OpenLibrary = /** @class */ (function () {
      * @param {string} bookTitle Optional parameter which specifies the 'Work' (book) title.
      * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
      * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
-     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
     OpenLibrary.prototype.getIsbnPage = function (bookId, bookTitle, suffix, fullUrl) {
         if (bookTitle === void 0) { bookTitle = ""; }
@@ -187,7 +188,7 @@ var OpenLibrary = /** @class */ (function () {
      * @param {string} bookTitle Optional parameter which specifies the 'Edition' (book) title.
      * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
      * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Editions' API.
-     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
     OpenLibrary.prototype.getEditionsPage = function (bookId, bookTitle, suffix, fullUrl) {
         if (bookTitle === void 0) { bookTitle = ""; }
@@ -202,6 +203,7 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    // todo: finish functionality for Books API
     /**
      * Use the configurable 'Books' endpoint which allows requesting information on one or more books
      * using ISBNs, OCLC Numbers, LCCNs and OLIDs (Open Library IDs).
@@ -287,7 +289,7 @@ var OpenLibrary = /** @class */ (function () {
      */
     OpenLibrary.prototype.getAuthorPhoto = function (key, value, size) {
         return __awaiter(this, void 0, void 0, function () {
-            var request, response;
+            var request, response, url;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -295,7 +297,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        return [2 /*return*/, response && response["status"] == 200 ? response["request"]["res"]["responseUrl"] : response];
+                        url = response.request.res.responseUrl;
+                        return [2 /*return*/, response.status == 200 ? url : response];
                 }
             });
         });
@@ -315,8 +318,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response["data"];
-                        return [2 /*return*/, response["status"] == 200 ? data : response];
+                        data = response.data;
+                        return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
         });
@@ -346,8 +349,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response["data"];
-                        return [2 /*return*/, response["status"] == 200 ? data : response];
+                        data = response.data;
+                        return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
         });
@@ -386,8 +389,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response["data"];
-                        return [2 /*return*/, response["status"] == 200 ? data : response];
+                        data = response.data;
+                        return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
         });
@@ -411,13 +414,12 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response["data"];
-                        return [2 /*return*/, response["status"] == 200 ? data : response];
+                        data = response.data;
+                        return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
         });
     };
-    // todo
     /**
      * Request information about readable versions of mulitple books. This is the multi request format.
      * @param requestList A <request-list> is a list of <request>s, separated by '|'. [Open Library Docs](https://openlibrary.org/dev/docs/api/read)
@@ -433,8 +435,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response["data"];
-                        return [2 /*return*/, response["status"] ? data : response];
+                        data = response.data;
+                        return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
         });
@@ -443,6 +445,6 @@ var OpenLibrary = /** @class */ (function () {
 }());
 exports["default"] = OpenLibrary;
 // const openLibrary = new OpenLibrary();
-// openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then(res => {
+// openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then((res) => {
 //     console.log(res, "RESUMMESAKI");
 // });

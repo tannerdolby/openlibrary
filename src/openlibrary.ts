@@ -7,7 +7,7 @@ import {
     BibKeys, 
     RequestConfig, 
     BookCovers, 
-    OpenLibResponse, 
+    OpenLibHTMLOrFileResponse, 
     AuthorSearchJSONResposnse,
     GetAuthorWorksResponse,
     OpenLibraryResponse,
@@ -75,8 +75,9 @@ export default class OpenLibrary {
     */
     async getBookCover(key: string, value: string | number, size: string) {
         let request: string = `${this.coversApiUrl}/b/${key.toLowerCase()}/${value}-${size}.jpg`;
-        let response = await axios.get(request, this.requestConfig);
-        return response && response["status"] == 200 ? response["request"]["res"]["responseUrl"] : response;
+        let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
+        let url: string = response.request.res.responseUrl;
+        return response && response["status"] == 200 ? url : response;
     }
 
     /**
@@ -85,7 +86,7 @@ export default class OpenLibrary {
      * @returns {string[]} An array of book cover image URLs.
     */
     async getBookCovers(coversObjList: BookCovers[]) {
-        let covers: Promise<any>[] = [];
+        let covers: Promise<string | OpenLibraryResponse>[] = [];
         coversObjList.forEach(cover => {
             const { key, id, size } = cover;
             const response = this.getBookCover(key, id, size);
@@ -102,11 +103,11 @@ export default class OpenLibrary {
      * @param {string} bookTitle Optional parameter which specifies the 'Work' (book) title.
      * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
      * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
-     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
     async getWorksPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
         let request: string = bookTitle && (suffix == "" || !suffix) ? `${this.baseUrl}/works/${bookId}/${bookTitle}` : `${this.baseUrl}/works/${bookId}.${suffix}`;
-        let response: OpenLibResponse = this.executeGetRequest(fullUrl == "" ? request : fullUrl, this.requestConfig);
+        let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(fullUrl == "" ? request : fullUrl, this.requestConfig);
         return response;
     }
     
@@ -116,11 +117,11 @@ export default class OpenLibrary {
      * @param {string} bookTitle Optional parameter which specifies the 'Work' (book) title.
      * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
      * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
-     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
     async getIsbnPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
         let request: string = bookTitle && (suffix == "" || !suffix) ? `${this.baseUrl}/isbn/${bookId}` : `${this.baseUrl}/isbn/${bookId}.${suffix}`;
-        let response: OpenLibResponse = this.executeGetRequest(request, this.requestConfig);
+        let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(request, this.requestConfig);
         return response;
     }
 
@@ -130,14 +131,15 @@ export default class OpenLibrary {
      * @param {string} bookTitle Optional parameter which specifies the 'Edition' (book) title.
      * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
      * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Editions' API.
-     * @returns {OpenLibResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
     async getEditionsPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
         let request: string = bookTitle && (suffix == "" || !suffix) ? `${this.baseUrl}/books/${bookId}/${bookTitle}` : `${this.baseUrl}/books/${bookId}.${suffix}`;
-        let response: OpenLibResponse = this.executeGetRequest(request, this.requestConfig);
+        let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(request, this.requestConfig);
         return response;
     }
 
+    // todo: finish functionality for Books API
     /**
      * Use the configurable 'Books' endpoint which allows requesting information on one or more books 
      * using ISBNs, OCLC Numbers, LCCNs and OLIDs (Open Library IDs).
@@ -154,7 +156,7 @@ export default class OpenLibrary {
     async getBooksPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", bibkeys: BibKeys = {"openLibraryIdType": "", "openLibraryId": 0}, format: string = "", callback: Function = function(){}, jscmd: string = "", fullUrl: string="") {
         let request: string = "";
         let bibKeysStr: string = "";
-        let response: Promise<string | GetWorksPageFileResponse | GetWorksPageGenericResponse | undefined>;
+        let response: OpenLibHTMLOrFileResponse;
         let queryParams: QueryParams = {
             bibkeys: bibkeys,
             format: format, // javascript by default
@@ -198,7 +200,7 @@ export default class OpenLibrary {
      */
     async getAuthorsPage(authorId: string, suffix: Suffix = "json") {
         let request: string = `${this.baseUrl}/authors/${authorId}.${suffix}`;
-        let response = this.executeGetRequest(request, this.requestConfig);
+        let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(request, this.requestConfig);
         return response;
     }
 
@@ -209,9 +211,10 @@ export default class OpenLibrary {
      * @param {string} size The size of the book cover image. Can be one of S, M and L for small, medium and large respectively.
      */
     async getAuthorPhoto(key: string, value: string, size: string) {
-        let request = `${this.coversApiUrl}/a/${key.toLowerCase()}/${value}-${size}.jpg`;
-        let response = await axios.get(request, this.requestConfig);
-        return response && response["status"] == 200 ? response["request"]["res"]["responseUrl"] : response;
+        let request: string = `${this.coversApiUrl}/a/${key.toLowerCase()}/${value}-${size}.jpg`;
+        let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
+        let url: string = response.request.res.responseUrl;
+        return response.status == 200 ? url : response;
     }
 
     /**
@@ -221,10 +224,9 @@ export default class OpenLibrary {
      */
     async searchForAuthors(query: string) {
         let request: string = `${this.searchApiUrl}/authors.json?q=${query.replace(/\s+/, "%20")}`;
-        let response = await axios.get(request, this.requestConfig);
-        let data: AuthorSearchJSONResposnse = response["data"];
-
-        return response["status"] == 200 ? data : response;
+        let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
+        let data = response.data;
+        return response.status == 200 ? data : response;
     }
 
     /**
@@ -242,9 +244,8 @@ export default class OpenLibrary {
             request += `?offset=${offset}`;
         }
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
-        let data = response["data"];
-
-        return response["status"] == 200 ? data : response;
+        let data = response.data;
+        return response.status == 200 ? data : response;
     }
 
     // ----------------- END AUTHORS API -----------------
@@ -272,8 +273,8 @@ export default class OpenLibrary {
         qs.slice(0, -1);
         let request: string = `${this.searchApiUrl}.json?${qs}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
-        let data = response["data"];
-        return response["status"] == 200 ? data : response;
+        let data = response.data;
+        return response.status == 200 ? data : response;
     }
 
     // --------- Partner API (Formerly the Read API) --------
@@ -287,29 +288,26 @@ export default class OpenLibrary {
         if (typeof idValue == "number") idValue = `${idValue}`;
         let request: string = `https://openlibrary.org/api/volumes/brief/${idType}/${idValue}.json`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
-        let data = response["data"];
-        return response["status"] == 200 ? data : response;
+        let data = response.data;
+        return response.status == 200 ? data : response;
 
     }
 
-    // todo
     /**
      * Request information about readable versions of mulitple books. This is the multi request format.
      * @param requestList A <request-list> is a list of <request>s, separated by '|'. [Open Library Docs](https://openlibrary.org/dev/docs/api/read)
      * @returns The return value is a hash, with each successful <request> as keys. Expect A JSON response containing the readable versions for the book identifiers supplied in the request list.
      */
-    async getReadableVersions(requestList: string | []) {
-        // a string of formatted items, or an array (preferred)
-        // the request list below contains two <request>'s
-        // mock req: /json/id:1;lccn:50006784|olid:OL6179000M;lccn:55011330
+    async getReadableVersions(requestList: string) {
+        // todo: allow for an array of <request>s to be taken as input also
         let request = `http://openlibrary.org/api/volumes/brief/json/${requestList}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
-        let data = response["data"];
-        return response["status"] ? data : response;
+        let data = response.data;
+        return response.status == 200 ? data : response;
     }
 }
 
 // const openLibrary = new OpenLibrary();
-// openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then(res => {
+// openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then((res) => {
 //     console.log(res, "RESUMMESAKI");
 // });
