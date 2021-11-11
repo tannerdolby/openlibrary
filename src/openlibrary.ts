@@ -77,7 +77,7 @@ export default class OpenLibrary {
         let request: string = `${this.coversApiUrl}/b/${key.toLowerCase()}/${value}-${size}.jpg`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let url: string = response.request.res.responseUrl;
-        return response && response["status"] == 200 ? url : response;
+        return response.status == 200 ? url : response;
     }
 
     /**
@@ -306,8 +306,3 @@ export default class OpenLibrary {
         return response.status == 200 ? data : response;
     }
 }
-
-// const openLibrary = new OpenLibrary();
-// openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then((res) => {
-//     console.log(res, "RESUMMESAKI");
-// });

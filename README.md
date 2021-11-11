@@ -61,7 +61,7 @@ The `openlibrary` client library supports the following [Open Library APIs](http
 - [ ] Subjects API (Experimental) - Fetch books by subject name
 - [x] Search API (todo) - Search results for books, authors, and more
 - [ ] Search inside API (todo) - Search for matching text within millions of books
-- [x] Partner API - Formerly the "Read" API, fetch one or more books by library identifiers (ISBNs, OCLC, LCCNs)
+- [x] Partner API - Formerly the "Read" API, fetch one or more readable versions of books by library identifiers (ISBNs, OCLC, LCCNs)
 - [x] Covers API - Fetch book covers by ISBN or Open Library identifier
 - [ ] Recent Changes API (todo) - Programatic access to changes across Open Library
 - [ ] REST API (todo)
