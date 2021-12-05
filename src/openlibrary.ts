@@ -16,7 +16,8 @@ import {
 
 /**
  * A class representing the Open Library API connections. Fetch data from 
- * the Open Library REST API and Open Library APIs outlined in the [Developer Center](https://openlibrary.org/dev/docs/api/)
+ * the Open Library REST API and Open Library APIs outlined in the 
+ * [Developer Center](https://openlibrary.org/dev/docs/api/).
  */
 export default class OpenLibrary {
     baseUrl: string;
@@ -24,7 +25,9 @@ export default class OpenLibrary {
     coversApiUrl: string;
     authorsApiUrl: string;
     searchApiUrl: string;
+    subjectsApiUrl: string;
     requestConfig: RequestConfig;
+    data: Object;
 
     constructor() {
         this.baseUrl = "https://openlibrary.org";
@@ -32,6 +35,8 @@ export default class OpenLibrary {
         this.coversApiUrl = "https://covers.openlibrary.org";
         this.authorsApiUrl = "https://authors.openlibrary.org";
         this.searchApiUrl = `${this.baseUrl}/search`;
+        this.subjectsApiUrl = `${this.baseUrl}/subjects`;
+        this.data = {};
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
@@ -41,6 +46,20 @@ export default class OpenLibrary {
         };
     }
 
+    get(this: OpenLibrary, key: string) {
+        const obj = Object.assign(this);
+        let value;
+        for (const prop in this) {
+            if (prop === key) { value = obj[prop]; }
+        }
+        return value;
+    }
+
+    get payload(): Object {
+        return this.data;
+    }
+
+    // Mainly for Books and Covers API calls
     async executeGetRequest (url: string , reqConfig: RequestConfig) {
         let response: GetWorksPageGenericResponse | GetWorksPageFileResponse;
         let redirectedHtml: string = "";
@@ -49,7 +68,8 @@ export default class OpenLibrary {
             response = await axios.get(url, reqConfig);
             return response.hasOwnProperty("data") ? response.data : response;
         } catch (e) {
-            // todo: address this axios redirect hiccup
+            // todo: this works but feels hackish
+            // address this axios redirect hiccup
             if (e.response.hasOwnProperty("data") && e.response.data) {
                 redirectedHtml = e.response.data;
             } else {
@@ -66,6 +86,7 @@ export default class OpenLibrary {
         }
     }
 
+    // ----- Covers API ------
     /**
      * Get a book covers image URL from the Covers API.
      * @param {string} key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
@@ -77,6 +98,7 @@ export default class OpenLibrary {
         let request: string = `${this.coversApiUrl}/b/${key.toLowerCase()}/${value}-${size}.jpg`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let url: string = response.request.res.responseUrl;
+        this.data = url;
         return response.status == 200 ? url : response;
     }
 
@@ -93,9 +115,11 @@ export default class OpenLibrary {
             covers.push(response);
         });
         return Promise.all(covers).then(c => {
+            this.data = c;
             return c;
         });
     };
+    // ---- Covers API End --------
 
     /**
      * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
@@ -106,8 +130,12 @@ export default class OpenLibrary {
      * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
     async getWorksPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
-        let request: string = bookTitle && (suffix == "" || !suffix) ? `${this.baseUrl}/works/${bookId}/${bookTitle}` : `${this.baseUrl}/works/${bookId}.${suffix}`;
-        let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(fullUrl == "" ? request : fullUrl, this.requestConfig);
+        let request: string = bookTitle && (suffix == "" || !suffix) ? 
+            `${this.baseUrl}/works/${bookId}/${bookTitle}` : `${this.baseUrl}/works/${bookId}.${suffix}`;
+        let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(
+            fullUrl == "" ? request : fullUrl, this.requestConfig
+        );
+        this.data = response;
         return response;
     }
     
@@ -119,9 +147,11 @@ export default class OpenLibrary {
      * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
      * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
-    async getIsbnPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
-        let request: string = bookTitle && (suffix == "" || !suffix) ? `${this.baseUrl}/isbn/${bookId}` : `${this.baseUrl}/isbn/${bookId}.${suffix}`;
+    async getISBNPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
+        let request: string = bookTitle && (suffix == "" || !suffix) ? 
+            `${this.baseUrl}/isbn/${bookId}` : `${this.baseUrl}/isbn/${bookId}.${suffix}`;
         let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(request, this.requestConfig);
+        this.data = response;
         return response;
     }
 
@@ -134,8 +164,10 @@ export default class OpenLibrary {
      * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
     async getEditionsPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
-        let request: string = bookTitle && (suffix == "" || !suffix) ? `${this.baseUrl}/books/${bookId}/${bookTitle}` : `${this.baseUrl}/books/${bookId}.${suffix}`;
+        let request: string = bookTitle && (suffix == "" || !suffix) ? 
+            `${this.baseUrl}/books/${bookId}/${bookTitle}` : `${this.baseUrl}/books/${bookId}.${suffix}`;
         let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(request, this.requestConfig);
+        this.data = response;
         return response;
     }
 
@@ -191,6 +223,7 @@ export default class OpenLibrary {
         response = this.executeGetRequest(request, this.requestConfig);
         return response;
     }
+    // ----- END BOOKS APIs -----
 
     // ----------------- AUTHORS APIs -----------------
     /**
@@ -201,6 +234,7 @@ export default class OpenLibrary {
     async getAuthorsPage(authorId: string, suffix: Suffix = "json") {
         let request: string = `${this.baseUrl}/authors/${authorId}.${suffix}`;
         let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(request, this.requestConfig);
+        this.data = response;
         return response;
     }
 
@@ -214,6 +248,7 @@ export default class OpenLibrary {
         let request: string = `${this.coversApiUrl}/a/${key.toLowerCase()}/${value}-${size}.jpg`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let url: string = response.request.res.responseUrl;
+        this.data = url;
         return response.status == 200 ? url : response;
     }
 
@@ -226,6 +261,7 @@ export default class OpenLibrary {
         let request: string = `${this.searchApiUrl}/authors.json?q=${query.replace(/\s+/, "%20")}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let data = response.data;
+        this.data = data;
         return response.status == 200 ? data : response;
     }
 
@@ -245,17 +281,32 @@ export default class OpenLibrary {
         }
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let data = response.data;
+        this.data = data;
         return response.status == 200 ? data : response;
     }
 
     // ----------------- END AUTHORS API -----------------
 
-
-    // Subjects API 
-    async getSubjectsPage() {
+    // -------- SUBJECTS API  ------------
+    /**
+     * Get works of a subject. Note: This API is experimental and may change in the future.
+     * @param subject Parameter which specifies the subject name to retrieve details for.
+     * @param queryParams Query parameters to customize returned subject details.
+     */
+    async getSubjectsPage(subject: string, queryParams: string | object) {
+        let request = `${this.subjectsApiUrl}/${subject}.json`;
+        if (queryParams && typeof queryParams == "string") {
+            request += queryParams;
+        } else if (queryParams && typeof queryParams == "object") {
+            for (const field in queryParams) {
+                console.log(field, "IM A FIELD");
+            }
+        }
+        let response: OpenLibraryResponse =  await axios.get(request, this.requestConfig);
         // todo
     }
 
+    // ---- SEARCH API ---- 
     /**
      * Use the Search API to specify a solr query and return the results found.
      * @param queryParam Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
@@ -264,18 +315,21 @@ export default class OpenLibrary {
      */
     async search(queryParam: string, fields: string = "", archive: boolean = false) {
         // http://openlibrary.org/search.json?q=the+lord+of+the+rings&page=2
-        let query: string = !queryParam.split("").includes("=")  ? `q=${queryParam.replace(/\s+/, "+")}` : queryParam;
-        let fieldStr: string = fields ? `fields=${fields}` : "";
-        let isFromArchive: string = archive ? "availability" : "";
+        let query = !queryParam.split("").includes("=")  ? `q=${queryParam.replace(/\s+/, "+")}` : queryParam;
+        let fieldStr = fields ? `fields=${fields}` : "";
+        let isFromArchive = archive ? "availability" : "";
         let args: string[] = [query, fieldStr, isFromArchive];
-        let qs: string = "";
+        let qs = "";
         args.forEach(arg => qs += `${arg},`);
         qs.slice(0, -1);
         let request: string = `${this.searchApiUrl}.json?${qs}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let data = response.data;
+        this.data = data;
         return response.status == 200 ? data : response;
     }
+
+    // ---- END SEARCH API 
 
     // --------- Partner API (Formerly the Read API) --------
     /**
@@ -289,6 +343,7 @@ export default class OpenLibrary {
         let request: string = `https://openlibrary.org/api/volumes/brief/${idType}/${idValue}.json`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let data = response.data;
+        this.data = data;
         return response.status == 200 ? data : response;
 
     }
@@ -303,6 +358,11 @@ export default class OpenLibrary {
         let request = `http://openlibrary.org/api/volumes/brief/json/${requestList}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let data = response.data;
+        this.data = data;
         return response.status == 200 ? data : response;
     }
 }
+
+const openLib = new OpenLibrary();
+console.log(openLib.get("baseUrl"));
+// openLib.getISBNPage()

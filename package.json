@@ -4,7 +4,7 @@
   "description": "A Node.js Open Library client written in TypeScript for interacting with the Open Library APIs.",
   "main": "openlibrary.js",
   "scripts": {
-    "tsc": "tsc ./src/openlibrary.ts",
+    "tsc": "tsc -t es5 ./src/openlibrary.ts",
     "dev": "node ./src/openlibrary.js",
     "test": "jest tests/"
   },

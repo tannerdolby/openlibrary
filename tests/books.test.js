@@ -120,7 +120,7 @@ test("A request to the 'Works' API for a given book ID and title returns expecte
 });
 
 test("A request to the 'ISBN' API for a given book returns expected .json output", () => {
-    let results = openLibrary.getIsbnPage("9780140328721", "", "json");
+    let results = openLibrary.getISBNPage("9780140328721", "", "json");
     results.then(res => {
         expect(res["publishers"]).toEqual([ 'Puffin' ]);
         expect(res["number_of_pages"]).toBe(96);
@@ -135,7 +135,7 @@ test("A request to the 'ISBN' API for a given book returns expected .json output
 });
 
 test("A request to the 'ISBN' API for a given book returns expected .yml output", () => {
-    let results = openLibrary.getIsbnPage("9780140328721", "", "yml");
+    let results = openLibrary.getISBNPage("9780140328721", "", "yml");
     results.then(res => {
         let yamlObj = yaml.load(res, "utf-8");
         expect(yamlObj["publishers"]).toEqual([ 'Puffin' ]);
@@ -151,7 +151,7 @@ test("A request to the 'ISBN' API for a given book returns expected .yml output"
 });
 
 test ("A request to the 'ISBN' API for a given book ID returns failed redirect expected HTML output", () => {
-    let results = openLibrary.getIsbnPage("9780140328721", "");
+    let results = openLibrary.getISBNPage("9780140328721", "");
     results.then(res => {
         const $ = cheerio.load(res);
         expect($("title").text()).toBe("/isbn/9780140328721. is not found | Open Library");

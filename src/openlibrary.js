@@ -35,11 +35,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-exports.__esModule = true;
-var axios = require("axios")["default"];
+Object.defineProperty(exports, "__esModule", { value: true });
+var axios = require("axios").default;
 /**
  * A class representing the Open Library API connections. Fetch data from
- * the Open Library REST API and Open Library APIs outlined in the [Developer Center](https://openlibrary.org/dev/docs/api/)
+ * the Open Library REST API and Open Library APIs outlined in the
+ * [Developer Center](https://openlibrary.org/dev/docs/api/).
  */
 var OpenLibrary = /** @class */ (function () {
     function OpenLibrary() {
@@ -48,14 +49,24 @@ var OpenLibrary = /** @class */ (function () {
         this.coversApiUrl = "https://covers.openlibrary.org";
         this.authorsApiUrl = "https://authors.openlibrary.org";
         this.searchApiUrl = this.baseUrl + "/search";
+        this.subjectsApiUrl = this.baseUrl + "/subjects";
+        this.data = {};
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
                 'Accept': "text/html, text/plain, application/json, application/yaml, image/*",
-                'Accept-Encoding': 'gzip, deflate, br'
+                'Accept-Encoding': 'gzip, deflate, br',
             }
         };
     }
+    Object.defineProperty(OpenLibrary.prototype, "payload", {
+        get: function () {
+            return this.data;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    // Mainly for Books and Covers API calls
     OpenLibrary.prototype.executeGetRequest = function (url, reqConfig) {
         return __awaiter(this, void 0, void 0, function () {
             var response, redirectedHtml, e_1;
@@ -72,7 +83,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [2 /*return*/, response.hasOwnProperty("data") ? response.data : response];
                     case 3:
                         e_1 = _a.sent();
-                        // todo: address this axios redirect hiccup
+                        // todo: this works but feels hackish
+                        // address this axios redirect hiccup
                         if (e_1.response.hasOwnProperty("data") && e_1.response.data) {
                             redirectedHtml = e_1.response.data;
                         }
@@ -94,6 +106,7 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    // ----- Covers API ------
     /**
      * Get a book covers image URL from the Covers API.
      * @param {string} key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
@@ -112,7 +125,8 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         url = response.request.res.responseUrl;
-                        return [2 /*return*/, response && response["status"] == 200 ? url : response];
+                        this.data = url;
+                        return [2 /*return*/, response.status == 200 ? url : response];
                 }
             });
         });
@@ -134,12 +148,14 @@ var OpenLibrary = /** @class */ (function () {
                     covers.push(response);
                 });
                 return [2 /*return*/, Promise.all(covers).then(function (c) {
+                        _this.data = c;
                         return c;
                     })];
             });
         });
     };
     ;
+    // ---- Covers API End --------
     /**
      * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
      * @param {string} bookId A required parameter representing the book identifier.
@@ -155,8 +171,10 @@ var OpenLibrary = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var request, response;
             return __generator(this, function (_a) {
-                request = bookTitle && (suffix == "" || !suffix) ? this.baseUrl + "/works/" + bookId + "/" + bookTitle : this.baseUrl + "/works/" + bookId + "." + suffix;
+                request = bookTitle && (suffix == "" || !suffix) ?
+                    this.baseUrl + "/works/" + bookId + "/" + bookTitle : this.baseUrl + "/works/" + bookId + "." + suffix;
                 response = this.executeGetRequest(fullUrl == "" ? request : fullUrl, this.requestConfig);
+                this.data = response;
                 return [2 /*return*/, response];
             });
         });
@@ -169,15 +187,17 @@ var OpenLibrary = /** @class */ (function () {
      * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
      * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
      */
-    OpenLibrary.prototype.getIsbnPage = function (bookId, bookTitle, suffix, fullUrl) {
+    OpenLibrary.prototype.getISBNPage = function (bookId, bookTitle, suffix, fullUrl) {
         if (bookTitle === void 0) { bookTitle = ""; }
         if (suffix === void 0) { suffix = ""; }
         if (fullUrl === void 0) { fullUrl = ""; }
         return __awaiter(this, void 0, void 0, function () {
             var request, response;
             return __generator(this, function (_a) {
-                request = bookTitle && (suffix == "" || !suffix) ? this.baseUrl + "/isbn/" + bookId : this.baseUrl + "/isbn/" + bookId + "." + suffix;
+                request = bookTitle && (suffix == "" || !suffix) ?
+                    this.baseUrl + "/isbn/" + bookId : this.baseUrl + "/isbn/" + bookId + "." + suffix;
                 response = this.executeGetRequest(request, this.requestConfig);
+                this.data = response;
                 return [2 /*return*/, response];
             });
         });
@@ -197,8 +217,10 @@ var OpenLibrary = /** @class */ (function () {
         return __awaiter(this, void 0, void 0, function () {
             var request, response;
             return __generator(this, function (_a) {
-                request = bookTitle && (suffix == "" || !suffix) ? this.baseUrl + "/books/" + bookId + "/" + bookTitle : this.baseUrl + "/books/" + bookId + "." + suffix;
+                request = bookTitle && (suffix == "" || !suffix) ?
+                    this.baseUrl + "/books/" + bookId + "/" + bookTitle : this.baseUrl + "/books/" + bookId + "." + suffix;
                 response = this.executeGetRequest(request, this.requestConfig);
+                this.data = response;
                 return [2 /*return*/, response];
             });
         });
@@ -264,6 +286,7 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    // ----- END BOOKS APIs -----
     // ----------------- AUTHORS APIs -----------------
     /**
      * Fetch complete data for an individual author by identifier and gets their Author page as ".json|.yml|.rdf".
@@ -277,6 +300,7 @@ var OpenLibrary = /** @class */ (function () {
             return __generator(this, function (_a) {
                 request = this.baseUrl + "/authors/" + authorId + "." + suffix;
                 response = this.executeGetRequest(request, this.requestConfig);
+                this.data = response;
                 return [2 /*return*/, response];
             });
         });
@@ -298,6 +322,7 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         url = response.request.res.responseUrl;
+                        this.data = url;
                         return [2 /*return*/, response.status == 200 ? url : response];
                 }
             });
@@ -319,6 +344,7 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         data = response.data;
+                        this.data = data;
                         return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
@@ -350,20 +376,43 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         data = response.data;
+                        this.data = data;
                         return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
         });
     };
     // ----------------- END AUTHORS API -----------------
-    // Subjects API 
-    OpenLibrary.prototype.getSubjectsPage = function () {
+    // -------- SUBJECTS API  ------------
+    /**
+     * Get works of a subject. Note: This API is experimental and may change in the future.
+     * @param subject Parameter which specifies the subject name to retrieve details for.
+     * @param queryParams Query parameters to customize returned subject details.
+     */
+    OpenLibrary.prototype.getSubjectsPage = function (subject, queryParams) {
         return __awaiter(this, void 0, void 0, function () {
+            var request, field, response;
             return __generator(this, function (_a) {
-                return [2 /*return*/];
+                switch (_a.label) {
+                    case 0:
+                        request = this.subjectsApiUrl + "/" + subject + ".json";
+                        if (queryParams && typeof queryParams == "string") {
+                            request += queryParams;
+                        }
+                        else if (queryParams && typeof queryParams == "object") {
+                            for (field in queryParams) {
+                                console.log(field, "IM A FIELD");
+                            }
+                        }
+                        return [4 /*yield*/, axios.get(request, this.requestConfig)];
+                    case 1:
+                        response = _a.sent();
+                        return [2 /*return*/];
+                }
             });
         });
     };
+    // ---- SEARCH API ---- 
     /**
      * Use the Search API to specify a solr query and return the results found.
      * @param queryParam Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
@@ -390,11 +439,13 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         data = response.data;
+                        this.data = data;
                         return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
         });
     };
+    // ---- END SEARCH API 
     // --------- Partner API (Formerly the Read API) --------
     /**
      * Request information about readable versions of a single book edition.
@@ -415,6 +466,7 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         data = response.data;
+                        this.data = data;
                         return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
@@ -436,15 +488,25 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         data = response.data;
+                        this.data = data;
                         return [2 /*return*/, response.status == 200 ? data : response];
                 }
             });
         });
     };
+    OpenLibrary.prototype.get = function (key) {
+        var obj = Object.assign(this);
+        var value;
+        for (var prop in this) {
+            if (prop === key) {
+                value = obj[prop];
+            }
+        }
+        return value;
+    };
     return OpenLibrary;
 }());
-exports["default"] = OpenLibrary;
-// const openLibrary = new OpenLibrary();
-// openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then((res) => {
-//     console.log(res, "RESUMMESAKI");
-// });
+exports.default = OpenLibrary;
+var openLib = new OpenLibrary();
+console.log(openLib.get("baseUrl"));
+// openLib.getISBNPage()
