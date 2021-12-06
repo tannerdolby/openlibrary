@@ -423,7 +423,6 @@ var OpenLibrary = /** @class */ (function () {
                             }
                             if (request[request.length - 1] === "&")
                                 request = request.slice(0, -1);
-                            console.log(request, "REQUESTER");
                         }
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
@@ -523,6 +522,7 @@ var OpenLibrary = /** @class */ (function () {
 exports.default = OpenLibrary;
 var openLib = new OpenLibrary();
 console.log(openLib.get("bookApiUrl"));
+// todo: add tests
 openLib.getSubjectsPage("love", { "details": true, "limit": 2 }).then(function (res) {
-    console.log(res, "RESUMESAKI");
+    console.log(res);
 });
