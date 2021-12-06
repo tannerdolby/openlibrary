@@ -1,6 +1,5 @@
 {
     "compilerOptions": {
-        // Target latest version of ECMAScript.
         "module": "es6",
         "target": "es6",
         // Search under node_modules for non-relative imports.
