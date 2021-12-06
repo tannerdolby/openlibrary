@@ -11,7 +11,12 @@ import {
     AuthorSearchJSONResposnse,
     GetAuthorWorksResponse,
     OpenLibraryResponse,
-    OpenLibraryIDTypes
+    OpenLibraryIDTypes,
+    SubjectsAPIQueryParams,
+    SubjectsAPIResponse,
+    StringOrUndefined,
+    NumberOrUndefined,
+    BooleanOrUndefined
 } from "./types";
 
 /**
@@ -54,7 +59,6 @@ export default class OpenLibrary {
     async executeGetRequest (url: string , reqConfig: RequestConfig) {
         let response: GetWorksPageGenericResponse | GetWorksPageFileResponse;
         let redirectedHtml = "";
-
         try {
             response = await axios.get(url, reqConfig);
             return response.hasOwnProperty("data") ? response.data : response;
@@ -112,6 +116,7 @@ export default class OpenLibrary {
     };
     // ---- Covers API End --------
 
+    // ----- BOOKS API -----
     /**
      * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
      * @param {string} bookId A required parameter representing the book identifier.
@@ -279,21 +284,32 @@ export default class OpenLibrary {
     /**
      * Get works of a subject. Note: This API is experimental and may change in the future.
      * @param subject Parameter which specifies the subject name to retrieve details for.
-     * @param queryParams Query parameters to customize returned subject details.
+     * @param queryParams Query parameters to customize returned subject details. A string representing name=value pairs separated by an ampersand e.g. details=true&limit=5. Or 
+     * an object with key/value pairs that match query param names e.g. { details: true, limit: 5 }.
+     * @param details Query parameter. When details=true is passed, related subjects, prominent publishers, prolific authors and publishing_history is also included in the response.
+     * @param ebooks Query parameter. When ebooks=true is passed, only the works which have an e-book are included in the response.
+     * @param published_in Query parameter. Support for filter on published year range e.g. "1500-1600"
+     * @param limit Query parameter. Number of works to include in the response.
+     * @param offset Query parameter. The starting offset in the total works. Used for pagination.
+     * @returns {JSON} The works of a subject.
      */
-    async getSubjectsPage(subject: string, queryParams: string | object) {
+    async getSubjectsPage(subject: string, queryParams: StringOrUndefined | SubjectsAPIQueryParams | Object = undefined) {
         let request = `${this.subjectsApiUrl}/${subject}.json`;
-        if (queryParams && typeof queryParams == "string") {
-            request += queryParams;
+        if (queryParams != "" && typeof queryParams == "string") {
+            request += `?${queryParams}`;
         } else if (queryParams && typeof queryParams == "object") {
+            request += "?";
             for (const field in queryParams) {
-                console.log(field, "IM A FIELD");
+                request += `${field}=${Object.assign(queryParams)[field]}&`;
             }
+            if (request[request.length - 1] === "&") request = request.slice(0, -1);
         }
         let response: OpenLibraryResponse =  await axios.get(request, this.requestConfig);
-        this.data = response.data;
-        return response["status"] === 200 ? response.data : response;
+        let data: SubjectsAPIResponse = response.data;
+        this.data = data;
+        return response["status"] === 200 ? data : response;
     }
+    // ---- END SUBJECTS API ---
 
     // ---- SEARCH API ---- 
     /**
@@ -344,7 +360,7 @@ export default class OpenLibrary {
      */
     async getReadableVersions(requestList: string) {
         // todo: allow for an array of <request>s to be taken as input also
-        let request = `http://openlibrary.org/api/volumes/brief/json/${requestList}`;
+        let request = `https://openlibrary.org/api/volumes/brief/json/${requestList}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let data = response.data;
         this.data = data;
@@ -352,10 +368,10 @@ export default class OpenLibrary {
     }
 }
 
-// const openLib = new OpenLibrary();
-// console.log(openLib.get("bookApiUrl"));
-// openLib.getBookCover("id", 6564962, "L").then(res => {
-//     console.log(res, "RESUMESAAKI");
-//     console.log(openLib.data, "DATA");
-// });
+const openLib = new OpenLibrary();
+console.log(openLib.get("bookApiUrl"));
+// todo: add tests
+openLib.getSubjectsPage("love", { "details": true , "limit": 2}).then(res => {
+    console.log(res);
+});
 

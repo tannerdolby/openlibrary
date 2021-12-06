@@ -166,6 +166,7 @@ var OpenLibrary = /** @class */ (function () {
     };
     ;
     // ---- Covers API End --------
+    // ----- BOOKS API -----
     /**
      * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
      * @param {string} bookId A required parameter representing the book identifier.
@@ -395,32 +396,46 @@ var OpenLibrary = /** @class */ (function () {
     /**
      * Get works of a subject. Note: This API is experimental and may change in the future.
      * @param subject Parameter which specifies the subject name to retrieve details for.
-     * @param queryParams Query parameters to customize returned subject details.
+     * @param queryParams Query parameters to customize returned subject details. A string representing name=value pairs separated by an ampersand e.g. details=true&limit=5. Or
+     * an object with key/value pairs that match query param names e.g. { details: true, limit: 5 }.
+     * @param details Query parameter. When details=true is passed, related subjects, prominent publishers, prolific authors and publishing_history is also included in the response.
+     * @param ebooks Query parameter. When ebooks=true is passed, only the works which have an e-book are included in the response.
+     * @param published_in Query parameter. Support for filter on published year range e.g. "1500-1600"
+     * @param limit Query parameter. Number of works to include in the response.
+     * @param offset Query parameter. The starting offset in the total works. Used for pagination.
+     * @returns {JSON} The works of a subject.
      */
     OpenLibrary.prototype.getSubjectsPage = function (subject, queryParams) {
+        if (queryParams === void 0) { queryParams = undefined; }
         return __awaiter(this, void 0, void 0, function () {
-            var request, field, response;
+            var request, field, response, data;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         request = this.subjectsApiUrl + "/" + subject + ".json";
-                        if (queryParams && typeof queryParams == "string") {
-                            request += queryParams;
+                        if (queryParams != "" && typeof queryParams == "string") {
+                            request += "?" + queryParams;
                         }
                         else if (queryParams && typeof queryParams == "object") {
+                            request += "?";
                             for (field in queryParams) {
-                                console.log(field, "IM A FIELD");
+                                request += field + "=" + Object.assign(queryParams)[field] + "&";
                             }
+                            if (request[request.length - 1] === "&")
+                                request = request.slice(0, -1);
+                            console.log(request, "REQUESTER");
                         }
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        this.data = response.data;
-                        return [2 /*return*/, response["status"] === 200 ? response.data : response];
+                        data = response.data;
+                        this.data = data;
+                        return [2 /*return*/, response["status"] === 200 ? data : response];
                 }
             });
         });
     };
+    // ---- END SUBJECTS API ---
     // ---- SEARCH API ---- 
     /**
      * Use the Search API to specify a solr query and return the results found.
@@ -492,7 +507,7 @@ var OpenLibrary = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        request = "http://openlibrary.org/api/volumes/brief/json/" + requestList;
+                        request = "https://openlibrary.org/api/volumes/brief/json/" + requestList;
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
@@ -506,9 +521,8 @@ var OpenLibrary = /** @class */ (function () {
     return OpenLibrary;
 }());
 exports.default = OpenLibrary;
-// const openLib = new OpenLibrary();
-// console.log(openLib.get("bookApiUrl"));
-// openLib.getBookCover("id", 6564962, "L").then(res => {
-//     console.log(res, "RESUMESAAKI");
-//     console.log(openLib.data, "DATA");
-// });
+var openLib = new OpenLibrary();
+console.log(openLib.get("bookApiUrl"));
+openLib.getSubjectsPage("love", { "details": true, "limit": 2 }).then(function (res) {
+    console.log(res, "RESUMESAKI");
+});
