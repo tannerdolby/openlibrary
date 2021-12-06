@@ -40,7 +40,7 @@ interface BibKeysObjIndexes {
 
 export interface BibKeys extends BibKeysObjIndexes {
     "openLibraryIdType": string;
-    "openLibraryId": number
+    "openLibraryId": number;
 };
 
 export type RequestConfig = {
@@ -48,7 +48,7 @@ export type RequestConfig = {
     headers: { 'Accept': string; 'Accept-Encoding': string };
 }
 
-type DateType = { type: string, value: string };
+type DateType = { type: string; value: string };
 
 interface Authors {
     author: Object[];
@@ -56,7 +56,7 @@ interface Authors {
 }
 
 export interface GetWorksPageGenericResponse {
-    status: number,
+    status: number;
     statusText: string;
     headers: {
         server: string;
@@ -70,38 +70,38 @@ export interface GetWorksPageGenericResponse {
     };
     config: {
         transitional: {
-            silentJSONParsing: boolean,
-            forcedJSONParsing: boolean,
-            clarifyTimeoutError: boolean
-        },
-        adapter: [Function],
-        transformRequest: [ [Function] ],
-        transformResponse: [ [Function] ],
-        timeout: number,
-        xsrfCookieName: string,
-        xsrfHeaderName: string,
-        maxContentLength: number,
-        maxBodyLength: number,
-        validateStatus: [Function],
+            silentJSONParsing: boolean;
+            forcedJSONParsing: boolean;
+            clarifyTimeoutError: boolean;
+        };
+        adapter: [Function];
+        transformRequest: [ [Function] ];
+        transformResponse: [ [Function] ];
+        timeout: number;
+        xsrfCookieName: string;
+        xsrfHeaderName: string;
+        maxContentLength: number;
+        maxBodyLength: number;
+        validateStatus: [Function];
         headers: {
             Accept: string;
             'Accept-Encoding': string;
             'User-Agent': string;
-        },
+        };
         baseUrl: string;
         method: string;
         url: string;
         data: any;
-    };
+    },
     request: ClientRequest;
     _header: string;
     _KeepAliveTImeout: number;
     _onPendingData: Function;
     agent: Agent;
-    socketPath: string,
-    method: string,
-    maxHeaderSize: number,
-    insecureHTTPParser: boolean,
+    socketPath: string;
+    method: string;
+    maxHeaderSize: number;
+    insecureHTTPParser: boolean;
     path: string;
     _ended: boolean;
     _res: IncomingMessage;
@@ -144,45 +144,45 @@ export interface AuthorSearchJSONResposnse {
     start: number;
     numFoundExact: boolean;
     docs: DocObj[];
-    data: {}
+    data: {};
 }
 
 type GetAuthorWorksAuthorsType = {
     type: {
-        key: string
-    },
+        key: string;
+    };
     author: {
-        key: string
+        key: string;
     }
 }
 
-type TypeValuePair = { type: string, value: string};
+type TypeValuePair = { type: string; value: string};
 
 type AuthorWorksEntry = {
-    type: { key: string },
-    title: string,
-    authors: GetAuthorWorksAuthorsType[],
-    covers: number[],
-    key: string,
-    latest_revision: number,
+    type: { key: string };
+    title: string;
+    authors: GetAuthorWorksAuthorsType[];
+    covers: number[];
+    key: string;
+    latest_revision: number;
     revision: number;
-    created: TypeValuePair
-    last_modified: TypeValuePair
+    created: TypeValuePair;
+    last_modified: TypeValuePair;
 };
 
 export interface GetAuthorWorksResponse {
     links: {
-        self: string,
-        author: string,
-        next: string
-    },
-    size: number,
+        self: string;
+        author: string;
+        next: string;
+    };
+    size: number;
     entries: AuthorWorksEntry[]
 }
 
 // todo: better define this OpenLibraryResponse type
 export interface OpenLibraryResponse extends Response {
-    data: {};
+    data: any;
     request: {
         res: {
             responseUrl: string;
@@ -191,3 +191,43 @@ export interface OpenLibraryResponse extends Response {
 }
 
 export type OpenLibraryIDTypes = "isbn" | "lccn" | "oclc" | "olid";
+
+export interface SubjectsAPIQueryParams {
+    details: boolean;
+    ebooks: boolean;
+    published_in: string;
+    limit: number;
+    offset: number;
+}
+
+interface SubjectsAPIWorksObj {
+    key: string;
+    title: string;
+    edition_count: number;
+    cover_id: number;
+    cover_edition_key: string;
+    subject: Array<any>;
+    ia_collection: Array<any>;
+    lendinglibrary: boolean;
+    printdisabled: boolean;
+    lending_edition: string;
+    lending_identifier: string;
+    authors: Array<any>;
+    first_publish_year: null | number;
+    ia: string;
+    public_scan: boolean;
+    has_fulltext: boolean;
+    availability: Object
+}
+
+export interface SubjectsAPIResponse {
+    key: '/subjects/love';
+    name: 'love';
+    subject_type: 'subject';
+    work_count: 14035;
+    works: SubjectsAPIWorksObj[];
+}
+
+export type StringOrUndefined = string | undefined;
+export type NumberOrUndefined = number | undefined;
+export type BooleanOrUndefined = boolean | undefined;
