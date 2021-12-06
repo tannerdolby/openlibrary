@@ -43,6 +43,7 @@ var axios = require("axios").default;
  * [Developer Center](https://openlibrary.org/dev/docs/api/).
  */
 var OpenLibrary = /** @class */ (function () {
+    // just a default constructor for now
     function OpenLibrary() {
         this.baseUrl = "https://openlibrary.org";
         this.bookApiUrl = this.baseUrl + "/api/books";
@@ -50,7 +51,6 @@ var OpenLibrary = /** @class */ (function () {
         this.authorsApiUrl = "https://authors.openlibrary.org";
         this.searchApiUrl = this.baseUrl + "/search";
         this.subjectsApiUrl = this.baseUrl + "/subjects";
-        this.data = {};
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
@@ -58,7 +58,17 @@ var OpenLibrary = /** @class */ (function () {
                 'Accept-Encoding': 'gzip, deflate, br',
             }
         };
+        this.data = {};
     }
+    OpenLibrary.prototype.get = function (key) {
+        var value;
+        for (var prop in this) {
+            if (prop === key) {
+                value = Object.assign(this)[prop];
+            }
+        }
+        return value;
+    };
     Object.defineProperty(OpenLibrary.prototype, "payload", {
         get: function () {
             return this.data;
@@ -243,9 +253,9 @@ var OpenLibrary = /** @class */ (function () {
         if (bookTitle === void 0) { bookTitle = ""; }
         if (suffix === void 0) { suffix = ""; }
         if (bibkeys === void 0) { bibkeys = { "openLibraryIdType": "", "openLibraryId": 0 }; }
-        if (format === void 0) { format = ""; }
+        if (format === void 0) { format = "javascript"; }
         if (callback === void 0) { callback = function () { }; }
-        if (jscmd === void 0) { jscmd = ""; }
+        if (jscmd === void 0) { jscmd = "viewapi"; }
         if (fullUrl === void 0) { fullUrl = ""; }
         return __awaiter(this, void 0, void 0, function () {
             var request, bibKeysStr, response, queryParams, idType, field;
@@ -256,7 +266,7 @@ var OpenLibrary = /** @class */ (function () {
                     bibkeys: bibkeys,
                     format: format,
                     callback: callback,
-                    jscmd: jscmd // viewapi by default
+                    jscmd: jscmd
                 };
                 if (bibkeys) {
                     if (bibkeys instanceof Object && bibkeys.constructor == Object) {
@@ -335,7 +345,7 @@ var OpenLibrary = /** @class */ (function () {
      */
     OpenLibrary.prototype.searchForAuthors = function (query) {
         return __awaiter(this, void 0, void 0, function () {
-            var request, response, data;
+            var request, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -343,9 +353,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response.data;
-                        this.data = data;
-                        return [2 /*return*/, response.status == 200 ? data : response];
+                        this.data = response.data;
+                        return [2 /*return*/, response.status == 200 ? response.data : response];
                 }
             });
         });
@@ -361,7 +370,7 @@ var OpenLibrary = /** @class */ (function () {
         if (limit === void 0) { limit = 0; }
         if (offset === void 0) { offset = 0; }
         return __awaiter(this, void 0, void 0, function () {
-            var request, response, data;
+            var request, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -375,9 +384,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response.data;
-                        this.data = data;
-                        return [2 /*return*/, response.status == 200 ? data : response];
+                        this.data = response.data;
+                        return [2 /*return*/, response.status == 200 ? response.data : response];
                 }
             });
         });
@@ -407,7 +415,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        return [2 /*return*/];
+                        this.data = response.data;
+                        return [2 /*return*/, response["status"] === 200 ? response.data : response];
                 }
             });
         });
@@ -445,7 +454,7 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
-    // ---- END SEARCH API 
+    // ---- END SEARCH API -----
     // --------- Partner API (Formerly the Read API) --------
     /**
      * Request information about readable versions of a single book edition.
@@ -494,19 +503,12 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
-    OpenLibrary.prototype.get = function (key) {
-        var obj = Object.assign(this);
-        var value;
-        for (var prop in this) {
-            if (prop === key) {
-                value = obj[prop];
-            }
-        }
-        return value;
-    };
     return OpenLibrary;
 }());
 exports.default = OpenLibrary;
-var openLib = new OpenLibrary();
-console.log(openLib.get("baseUrl"));
-// openLib.getISBNPage()
+// const openLib = new OpenLibrary();
+// console.log(openLib.get("bookApiUrl"));
+// openLib.getBookCover("id", 6564962, "L").then(res => {
+//     console.log(res, "RESUMESAAKI");
+//     console.log(openLib.data, "DATA");
+// });
