@@ -1,22 +1,17 @@
 const axios = require("axios").default;
 import { 
-    GetWorksPageFileResponse, 
-    GetWorksPageGenericResponse, 
+    GetWorksPageFileResponse,
     QueryParams, 
     Suffix, 
     BibKeys, 
     RequestConfig, 
     BookCovers, 
     OpenLibHTMLOrFileResponse, 
-    AuthorSearchJSONResposnse,
-    GetAuthorWorksResponse,
     OpenLibraryResponse,
     OpenLibraryIDTypes,
     SubjectsAPIQueryParams,
     SubjectsAPIResponse,
     StringOrUndefined,
-    NumberOrUndefined,
-    BooleanOrUndefined
 } from "./types";
 
 /**
@@ -38,11 +33,13 @@ export default class OpenLibrary {
             'Accept-Encoding': 'gzip, deflate, br',
         }
     };
-    data: Object = {};
+    
+    data: Object | string = {};
 
     // just a default constructor for now
-    constructor() {}
+    constructor() {};
 
+    // use a prototype.get("baseUrl") or prototype.baseUrl
     get(this: OpenLibrary, key: string) {
         let value;
         for (const prop in this) {
@@ -55,13 +52,13 @@ export default class OpenLibrary {
         return this.data;
     }
 
-    // Mainly for Books and Covers API calls
+    // mainly used for Books and Covers API calls
     async executeGetRequest (url: string , reqConfig: RequestConfig) {
-        let response: GetWorksPageGenericResponse | GetWorksPageFileResponse;
+        let response: GetWorksPageFileResponse;
         let redirectedHtml = "";
         try {
             response = await axios.get(url, reqConfig);
-            return response.hasOwnProperty("data") ? response.data : response;
+            return response.hasOwnProperty("data") ? response["data"]: response;
         } catch (e) {
             // todo: this works but feels hackish
             // address this axios redirect hiccup
@@ -242,9 +239,9 @@ export default class OpenLibrary {
     async getAuthorPhoto(key: string, value: string, size: string) {
         let request = `${this.coversApiUrl}/a/${key.toLowerCase()}/${value}-${size}.jpg`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
-        let url = response.request.res.responseUrl;
-        this.data = url;
-        return response.status == 200 ? url : response;
+        let photoUrl = response.request.res.responseUrl;
+        this.data = photoUrl;
+        return response.status == 200 ? this.data : response;
     }
 
     /**
@@ -256,7 +253,7 @@ export default class OpenLibrary {
         let request = `${this.searchApiUrl}/authors.json?q=${query.replace(/\s+/, "%20")}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         this.data = response.data;
-        return response.status == 200 ? response.data : response;
+        return response.status == 200 ? this.data : response;
     }
 
     /**
@@ -275,7 +272,7 @@ export default class OpenLibrary {
         }
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         this.data = response.data;
-        return response.status == 200 ? response.data : response;
+        return response.status == 200 ? this.data : response;
     }
 
     // ----------------- END AUTHORS API -----------------
@@ -305,9 +302,8 @@ export default class OpenLibrary {
             if (request[request.length - 1] === "&") request = request.slice(0, -1);
         }
         let response: OpenLibraryResponse =  await axios.get(request, this.requestConfig);
-        let data: SubjectsAPIResponse = response.data;
-        this.data = data;
-        return response["status"] === 200 ? data : response;
+        this.data = response.data;
+        return response["status"] === 200 ? this.data : response;
     }
     // ---- END SUBJECTS API ---
 
@@ -329,9 +325,8 @@ export default class OpenLibrary {
         qs.slice(0, -1);
         let request = `${this.searchApiUrl}.json?${qs}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
-        let data = response.data;
-        this.data = data;
-        return response.status == 200 ? data : response;
+        this.data = response.data;
+        return response.status == 200 ? this.data : response;
     }
 
     // ---- END SEARCH API -----
@@ -350,7 +345,6 @@ export default class OpenLibrary {
         let data = response.data;
         this.data = data;
         return response.status == 200 ? data : response;
-
     }
 
     /**
@@ -367,11 +361,3 @@ export default class OpenLibrary {
         return response.status == 200 ? data : response;
     }
 }
-
-const openLib = new OpenLibrary();
-console.log(openLib.get("bookApiUrl"));
-// todo: add tests
-openLib.getSubjectsPage("love", { "details": true , "limit": 2}).then(res => {
-    console.log(res);
-});
-

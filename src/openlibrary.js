@@ -60,6 +60,8 @@ var OpenLibrary = /** @class */ (function () {
         };
         this.data = {};
     }
+    ;
+    // use a prototype.get("baseUrl") or prototype.baseUrl
     OpenLibrary.prototype.get = function (key) {
         var value;
         for (var prop in this) {
@@ -76,7 +78,7 @@ var OpenLibrary = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    // Mainly for Books and Covers API calls
+    // mainly used for Books and Covers API calls
     OpenLibrary.prototype.executeGetRequest = function (url, reqConfig) {
         return __awaiter(this, void 0, void 0, function () {
             var response, redirectedHtml, e_1;
@@ -90,7 +92,7 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(url, reqConfig)];
                     case 2:
                         response = _a.sent();
-                        return [2 /*return*/, response.hasOwnProperty("data") ? response.data : response];
+                        return [2 /*return*/, response.hasOwnProperty("data") ? response["data"] : response];
                     case 3:
                         e_1 = _a.sent();
                         // todo: this works but feels hackish
@@ -324,7 +326,7 @@ var OpenLibrary = /** @class */ (function () {
      */
     OpenLibrary.prototype.getAuthorPhoto = function (key, value, size) {
         return __awaiter(this, void 0, void 0, function () {
-            var request, response, url;
+            var request, response, photoUrl;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -332,9 +334,9 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        url = response.request.res.responseUrl;
-                        this.data = url;
-                        return [2 /*return*/, response.status == 200 ? url : response];
+                        photoUrl = response.request.res.responseUrl;
+                        this.data = photoUrl;
+                        return [2 /*return*/, response.status == 200 ? this.data : response];
                 }
             });
         });
@@ -355,7 +357,7 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         this.data = response.data;
-                        return [2 /*return*/, response.status == 200 ? response.data : response];
+                        return [2 /*return*/, response.status == 200 ? this.data : response];
                 }
             });
         });
@@ -386,7 +388,7 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         this.data = response.data;
-                        return [2 /*return*/, response.status == 200 ? response.data : response];
+                        return [2 /*return*/, response.status == 200 ? this.data : response];
                 }
             });
         });
@@ -408,7 +410,7 @@ var OpenLibrary = /** @class */ (function () {
     OpenLibrary.prototype.getSubjectsPage = function (subject, queryParams) {
         if (queryParams === void 0) { queryParams = undefined; }
         return __awaiter(this, void 0, void 0, function () {
-            var request, field, response, data;
+            var request, field, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -427,9 +429,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response.data;
-                        this.data = data;
-                        return [2 /*return*/, response["status"] === 200 ? data : response];
+                        this.data = response.data;
+                        return [2 /*return*/, response["status"] === 200 ? this.data : response];
                 }
             });
         });
@@ -446,7 +447,7 @@ var OpenLibrary = /** @class */ (function () {
         if (fields === void 0) { fields = ""; }
         if (archive === void 0) { archive = false; }
         return __awaiter(this, void 0, void 0, function () {
-            var query, fieldStr, isFromArchive, args, qs, request, response, data;
+            var query, fieldStr, isFromArchive, args, qs, request, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -461,9 +462,8 @@ var OpenLibrary = /** @class */ (function () {
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
                     case 1:
                         response = _a.sent();
-                        data = response.data;
-                        this.data = data;
-                        return [2 /*return*/, response.status == 200 ? data : response];
+                        this.data = response.data;
+                        return [2 /*return*/, response.status == 200 ? this.data : response];
                 }
             });
         });
@@ -520,9 +520,3 @@ var OpenLibrary = /** @class */ (function () {
     return OpenLibrary;
 }());
 exports.default = OpenLibrary;
-var openLib = new OpenLibrary();
-console.log(openLib.get("bookApiUrl"));
-// todo: add tests
-openLib.getSubjectsPage("love", { "details": true, "limit": 2 }).then(function (res) {
-    console.log(res);
-});
