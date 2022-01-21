@@ -1,6 +1,3 @@
-import { ClientRequest, IncomingMessage, Agent } from "http";
-import { Writable } from "stream";
-
 export interface GetWorksPageFileResponse {
     description: string;
     title: string;
@@ -55,67 +52,6 @@ interface Authors {
     type: Object[];
 }
 
-export interface GetWorksPageGenericResponse {
-    status: number;
-    statusText: string;
-    headers: {
-        server: string;
-        date: string;
-        'content-type': string;
-        'transfer-encoding': string;
-        connection: string;
-        "x-ol-stats": string;
-        vary: string;
-        "referrer-policy": string;
-    };
-    config: {
-        transitional: {
-            silentJSONParsing: boolean;
-            forcedJSONParsing: boolean;
-            clarifyTimeoutError: boolean;
-        };
-        adapter: [Function];
-        transformRequest: [ [Function] ];
-        transformResponse: [ [Function] ];
-        timeout: number;
-        xsrfCookieName: string;
-        xsrfHeaderName: string;
-        maxContentLength: number;
-        maxBodyLength: number;
-        validateStatus: [Function];
-        headers: {
-            Accept: string;
-            'Accept-Encoding': string;
-            'User-Agent': string;
-        };
-        baseUrl: string;
-        method: string;
-        url: string;
-        data: any;
-    },
-    request: ClientRequest;
-    _header: string;
-    _KeepAliveTImeout: number;
-    _onPendingData: Function;
-    agent: Agent;
-    socketPath: string;
-    method: string;
-    maxHeaderSize: number;
-    insecureHTTPParser: boolean;
-    path: string;
-    _ended: boolean;
-    _res: IncomingMessage;
-    aborted: boolean;
-    timeoutCb: null;
-    upgradeOrConnect: boolean;
-    parser: null;
-    maxHeadersCount: null;
-    reusedSocket: boolean;
-    host: string;
-    protocol: string;
-    _redirectable: Writable;
-    data: GetWorksPageFileResponse | string;
-}
 
 export type BookCovers = {
     title: string;
@@ -124,7 +60,7 @@ export type BookCovers = {
     size: string;
 }
 
-export type OpenLibHTMLOrFileResponse = Promise<string | GetWorksPageFileResponse | GetWorksPageGenericResponse | undefined>;
+export type OpenLibHTMLOrFileResponse = Promise<string | GetWorksPageFileResponse | Response | undefined>;
 
 type DocObj = { 
     key: string;
@@ -221,10 +157,10 @@ interface SubjectsAPIWorksObj {
 }
 
 export interface SubjectsAPIResponse {
-    key: '/subjects/love';
-    name: 'love';
-    subject_type: 'subject';
-    work_count: 14035;
+    key: string;
+    name: string;
+    subject_type: string;
+    work_count: number;
     works: SubjectsAPIWorksObj[];
 }
 
