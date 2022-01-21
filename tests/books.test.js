@@ -14,13 +14,7 @@ test("A request to the 'Works' API for a given book ID returns expected .json ou
         "Finally tired of being constantly outwitted by Mr. Fox, the farmers attempt to capture and kill him. The foxes escape in time by burrowing deep into the ground. The farmers decide to wait outside the hole for the foxes to emerge. Unable to leave the hole and steal food, Mr. Fox and his family begin to starve. Mr. Fox devises a plan to steal food from the farmers by tunneling into the ground and borrowing into the farmer's houses.\r\n" +
         '\r\n' +
         'Aided by a friendly Badger, the animals bring the stolen food back and Mrs. Fox prepares a great celebratory banquet attended by the other starving animals and their families. Mr. Fox invites all the animals to live with him underground and says that he will provide food for them daily thanks to his underground passages. All the animals live happily and safely, while the farmers remain waiting outside in vain for Mr. Fox to show up.')
-        expect(res["covers"]).toEqual([
-               6498519,  8904777,
-                108274,   233884,
-               1119236,       -1,
-              10222599, 10482837,
-               3216657
-        ]);
+        expect(res["covers"].length).toBeGreaterThan(0);
         expect(res["subjects"]).toEqual([
             'Animals',
             'Hunger',
@@ -64,13 +58,7 @@ test("A request to the 'Works' API for a given book ID returns expected .yml out
         "Finally tired of being constantly outwitted by Mr. Fox, the farmers attempt to capture and kill him. The foxes escape in time by burrowing deep into the ground. The farmers decide to wait outside the hole for the foxes to emerge. Unable to leave the hole and steal food, Mr. Fox and his family begin to starve. Mr. Fox devises a plan to steal food from the farmers by tunneling into the ground and borrowing into the farmer's houses.\r\n" +
         '\r\n' +
         'Aided by a friendly Badger, the animals bring the stolen food back and Mrs. Fox prepares a great celebratory banquet attended by the other starving animals and their families. Mr. Fox invites all the animals to live with him underground and says that he will provide food for them daily thanks to his underground passages. All the animals live happily and safely, while the farmers remain waiting outside in vain for Mr. Fox to show up.')
-        expect(yamlObj["covers"]).toEqual([
-               6498519,  8904777,
-                108274,   233884,
-               1119236,       -1,
-              10222599, 10482837,
-               3216657
-        ]);
+        expect(yamlObj["covers"].length).toBeGreaterThan(0);
         expect(yamlObj["subjects"]).toEqual([
             'Animals',
             'Hunger',

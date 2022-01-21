@@ -11,7 +11,8 @@ test("A request to the 'Partner' API (formerly 'Read') for fetching a books read
 
 test("A request to the 'Partner' API (formerly 'Read') for fetching multiple books readable versions returns expects JSON response", () => {
     openLibrary.getReadableVersions("id:1;lccn:50006784|olid:OL6179000M;lccn:55011330").then(res => {
-        expect(res["1"]["records"]["/books/OL6068644M"]["data"]["url"]).toBe("http://openlibrary.org/books/OL6068644M/The_interpretation_of_dreams");
+        let urls = ["https://openlibrary.org/books/OL6068644M/The_interpretation_of_dreams", "http://openlibrary.org/books/OL6068644M/The_interpretation_of_dreams"];
+        expect(urls.includes(res["1"]["records"]["/books/OL6068644M"]["data"]["url"])).toBe(true);
         expect(res["1"]["records"]["/books/OL6068644M"]["data"]["key"]).toBe("/books/OL6068644M");
         expect(res["1"]["records"]["/books/OL6068644M"]["data"]["title"]).toBe("The interpretation of dreams");
     });
