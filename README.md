@@ -1,4 +1,4 @@
-# openlibrary 
+# openlibrary
 A Node.js Open Library client written in TypeScript for interacting with the Open Library APIs listed in the [Open Library Developer Center](https://openlibrary.org/developers/api). Requests to the Open Library servers made using [axios](https://www.npmjs.com/package/axios). 
 
 ## Installation
@@ -67,23 +67,7 @@ The `openlibrary` client library supports the following [Open Library APIs](http
 - [ ] REST API (todo)
 
 ## Methods
-Todo add documentation
-
-#### getEditionsPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="")
-Fetch an 'Editions' page for a specific book based on identifier and or title.
-
-`openLibrary.getEditionsPage("OL7353617M", "", "yml").then(res => { console.log(res) });`
-
-#### getAuthorsPage(authorId: string, suffix: Suffix = "json")
-Access data on an individual author.
-
-`openLibrary.getAuthorsPage("OL23919A", "yml").then(res => { console.log(res) });`
-
-#### getAuthorPhoto(key: string, value: string, size: string)
-Access an author photo using OLID or ID.
-
-`openLibrary.getAuthorPhoto("olid", "OL229501A", "S").then(res => { console.log(res) });`
-
+Todo add example calls for available functionality.
 
 ## Testing
 Jest is the test framework used. Run all of the unit tests locally with:
