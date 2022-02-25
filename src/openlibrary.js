@@ -38,19 +38,20 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios = require("axios").default;
 /**
- * A class representing the Open Library API connections. Fetch data from
+ * A class representing the Open Library API endpoints. Fetch data from
  * the Open Library REST API and Open Library APIs outlined in the
  * [Developer Center](https://openlibrary.org/dev/docs/api/).
  */
 var OpenLibrary = /** @class */ (function () {
-    // just a default constructor for now
     function OpenLibrary() {
+        this.data = {};
         this.baseUrl = "https://openlibrary.org";
         this.bookApiUrl = this.baseUrl + "/api/books";
         this.coversApiUrl = "https://covers.openlibrary.org";
         this.authorsApiUrl = "https://authors.openlibrary.org";
         this.searchApiUrl = this.baseUrl + "/search";
         this.subjectsApiUrl = this.baseUrl + "/subjects";
+        this.data = {};
         this.requestConfig = {
             baseUrl: this.baseUrl,
             headers: {
@@ -58,7 +59,6 @@ var OpenLibrary = /** @class */ (function () {
                 'Accept-Encoding': 'gzip, deflate, br',
             }
         };
-        this.data = {};
     }
     ;
     // use a prototype.get("baseUrl") or prototype.baseUrl
@@ -78,7 +78,7 @@ var OpenLibrary = /** @class */ (function () {
         enumerable: false,
         configurable: true
     });
-    // mainly used for Books and Covers API calls
+    // mainly used for Books and Covers endpoint calls
     OpenLibrary.prototype.executeGetRequest = function (url, reqConfig) {
         return __awaiter(this, void 0, void 0, function () {
             var response, redirectedHtml, e_1;
@@ -109,16 +109,11 @@ var OpenLibrary = /** @class */ (function () {
                             });
                         }
                         return [3 /*break*/, 4];
-                    case 4:
-                        if (redirectedHtml && redirectedHtml != "") {
-                            return [2 /*return*/, redirectedHtml];
-                        }
-                        return [2 /*return*/];
+                    case 4: return [2 /*return*/, redirectedHtml];
                 }
             });
         });
     };
-    // ----- Covers API ------
     /**
      * Get a book covers image URL from the Covers API.
      * @param {string} key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
@@ -167,8 +162,6 @@ var OpenLibrary = /** @class */ (function () {
         });
     };
     ;
-    // ---- Covers API End --------
-    // ----- BOOKS API -----
     /**
      * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
      * @param {string} bookId A required parameter representing the book identifier.
@@ -300,7 +293,6 @@ var OpenLibrary = /** @class */ (function () {
         });
     };
     // ----- END BOOKS APIs -----
-    // ----------------- AUTHORS APIs -----------------
     /**
      * Fetch complete data for an individual author by identifier and gets their Author page as ".json|.yml|.rdf".
      * @param authorId Required parameter which specifies the identifier key for an author.
@@ -393,8 +385,6 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
-    // ----------------- END AUTHORS API -----------------
-    // -------- SUBJECTS API  ------------
     /**
      * Get works of a subject. Note: This API is experimental and may change in the future.
      * @param subject Parameter which specifies the subject name to retrieve details for.
@@ -430,13 +420,11 @@ var OpenLibrary = /** @class */ (function () {
                     case 1:
                         response = _a.sent();
                         this.data = response.data;
-                        return [2 /*return*/, response["status"] === 200 ? this.data : response];
+                        return [2 /*return*/, response.status === 200 ? this.data : response];
                 }
             });
         });
     };
-    // ---- END SUBJECTS API ---
-    // ---- SEARCH API ---- 
     /**
      * Use the Search API to specify a solr query and return the results found.
      * @param queryParam Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
@@ -468,8 +456,6 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
-    // ---- END SEARCH API -----
-    // --------- Partner API (Formerly the Read API) --------
     /**
      * Request information about readable versions of a single book edition.
      * @param idType The Open Library identifier type. Can be 'isbn', 'lccn', 'oclc' or 'olid'.

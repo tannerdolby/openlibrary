@@ -10,34 +10,40 @@ import {
     OpenLibraryResponse,
     OpenLibraryIDTypes,
     SubjectsAPIQueryParams,
-    SubjectsAPIResponse,
     StringOrUndefined,
 } from "./types";
 
 /**
- * A class representing the Open Library API connections. Fetch data from 
+ * A class representing the Open Library API endpoints. Fetch data from 
  * the Open Library REST API and Open Library APIs outlined in the 
  * [Developer Center](https://openlibrary.org/dev/docs/api/).
  */
 export default class OpenLibrary {
-    baseUrl: string = "https://openlibrary.org";
-    bookApiUrl: string = `${this.baseUrl}/api/books`;
-    coversApiUrl: string = "https://covers.openlibrary.org";
-    authorsApiUrl: string = "https://authors.openlibrary.org";
-    searchApiUrl: string = `${this.baseUrl}/search`;
-    subjectsApiUrl: string = `${this.baseUrl}/subjects`;
-    requestConfig: RequestConfig = {
-        baseUrl: this.baseUrl,
-        headers: {
-            'Accept': "text/html, text/plain, application/json, application/yaml, image/*",
-            'Accept-Encoding': 'gzip, deflate, br',
-        }
-    };
-    
+    baseUrl: string;
+    bookApiUrl: string;
+    coversApiUrl: string;
+    authorsApiUrl: string;
+    searchApiUrl: string;
+    subjectsApiUrl: string;
+    requestConfig: RequestConfig;
     data: Object | string = {};
 
-    // just a default constructor for now
-    constructor() {};
+    constructor() {
+        this.baseUrl = "https://openlibrary.org";
+        this.bookApiUrl = `${this.baseUrl}/api/books`;
+        this.coversApiUrl = "https://covers.openlibrary.org";
+        this.authorsApiUrl = "https://authors.openlibrary.org";
+        this.searchApiUrl = `${this.baseUrl}/search`;
+        this.subjectsApiUrl= `${this.baseUrl}/subjects`;
+        this.data = {};
+        this.requestConfig = {
+            baseUrl: this.baseUrl,
+            headers: {
+                'Accept': "text/html, text/plain, application/json, application/yaml, image/*",
+                'Accept-Encoding': 'gzip, deflate, br',
+            }
+        }
+    };
 
     // use a prototype.get("baseUrl") or prototype.baseUrl
     get(this: OpenLibrary, key: string) {
@@ -52,7 +58,7 @@ export default class OpenLibrary {
         return this.data;
     }
 
-    // mainly used for Books and Covers API calls
+    // mainly used for Books and Covers endpoint calls
     async executeGetRequest (url: string , reqConfig: RequestConfig) {
         let response: GetWorksPageFileResponse;
         let redirectedHtml = "";
@@ -73,12 +79,9 @@ export default class OpenLibrary {
                 });
             }
         }
-        if (redirectedHtml && redirectedHtml != "") {
-            return redirectedHtml;
-        }
+        return redirectedHtml;
     }
 
-    // ----- Covers API ------
     /**
      * Get a book covers image URL from the Covers API.
      * @param {string} key The identifier type. Can be any one of ISBN, OCLC, LCCN, OLID and ID (case-insensitive)
@@ -111,9 +114,7 @@ export default class OpenLibrary {
             return c;
         });
     };
-    // ---- Covers API End --------
 
-    // ----- BOOKS API -----
     /**
      * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
      * @param {string} bookId A required parameter representing the book identifier.
@@ -217,7 +218,6 @@ export default class OpenLibrary {
     }
     // ----- END BOOKS APIs -----
 
-    // ----------------- AUTHORS APIs -----------------
     /**
      * Fetch complete data for an individual author by identifier and gets their Author page as ".json|.yml|.rdf". 
      * @param authorId Required parameter which specifies the identifier key for an author.
@@ -275,9 +275,6 @@ export default class OpenLibrary {
         return response.status == 200 ? this.data : response;
     }
 
-    // ----------------- END AUTHORS API -----------------
-
-    // -------- SUBJECTS API  ------------
     /**
      * Get works of a subject. Note: This API is experimental and may change in the future.
      * @param subject Parameter which specifies the subject name to retrieve details for.
@@ -303,11 +300,9 @@ export default class OpenLibrary {
         }
         let response: OpenLibraryResponse =  await axios.get(request, this.requestConfig);
         this.data = response.data;
-        return response["status"] === 200 ? this.data : response;
+        return response.status === 200 ? this.data : response;
     }
-    // ---- END SUBJECTS API ---
 
-    // ---- SEARCH API ---- 
     /**
      * Use the Search API to specify a solr query and return the results found.
      * @param queryParam Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
@@ -315,7 +310,6 @@ export default class OpenLibrary {
      * @returns A JSON response containing the search results returned from the solr query.
      */
     async search(queryParam: string, fields: string = "", archive: boolean = false) {
-        // http://openlibrary.org/search.json?q=the+lord+of+the+rings&page=2
         let query = !queryParam.split("").includes("=")  ? `q=${queryParam.replace(/\s+/, "+")}` : queryParam;
         let fieldStr = fields ? `fields=${fields}` : "";
         let isFromArchive = archive ? "availability" : "";
@@ -329,9 +323,6 @@ export default class OpenLibrary {
         return response.status == 200 ? this.data : response;
     }
 
-    // ---- END SEARCH API -----
-
-    // --------- Partner API (Formerly the Read API) --------
     /**
      * Request information about readable versions of a single book edition.
      * @param idType The Open Library identifier type. Can be 'isbn', 'lccn', 'oclc' or 'olid'.
@@ -353,7 +344,7 @@ export default class OpenLibrary {
      * @returns The return value is a hash, with each successful <request> as keys. Expect A JSON response containing the readable versions for the book identifiers supplied in the request list.
      */
     async getReadableVersions(requestList: string) {
-        // todo: allow for an array of <request>s to be taken as input also
+        // todo: allow for an array of <request>s to be taken as input
         let request = `https://openlibrary.org/api/volumes/brief/json/${requestList}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         let data = response.data;
