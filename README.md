@@ -49,7 +49,7 @@ openLibrary.getWorksPage("OL45883W", "", "json").then(res => {
 ## Why openlibrary?
 `openlibrary` is fast! ⚡
 
-It's written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs. There is one class [`OpenLibrary`](https://github.com/tannerdolby/openlibrary/blob/master/src/books.ts) that provides methods to easily interact with Open Library APIs.
+It's written in TypeScript and provides a user-friendly client library to interact with the Open Library APIs. There is one class [`OpenLibrary`](/src/openlibrary.ts) that provides methods to easily interact with Open Library APIs.
 
 The Open Library provides API access to several "book" related services. There is an [official client](https://github.com/internetarchive/openlibrary-client) written in Python provided by the Open Library team. There are also other "unofficial" client libraries written in [Ruby](https://github.com/jayfajardo/openlibrary) and more. This plugin falls into the "unofficial" client library section. Since there wasn't a Node.js client library already documented, that is what inspired me to develop openlibrary.
 
