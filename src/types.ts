@@ -167,3 +167,17 @@ export interface SubjectsAPIResponse {
 export type StringOrUndefined = string | undefined;
 export type NumberOrUndefined = number | undefined;
 export type BooleanOrUndefined = boolean | undefined;
+
+export type TitleObj = {
+    title: string;
+};
+
+export interface GenericSearchResponse extends Object {
+    numFound: number;
+    start: number;
+    numFoundExact: boolean;
+    docs: Array<TitleObj>;
+    num_found: number;
+    q: string;
+    offset: boolean;
+};
