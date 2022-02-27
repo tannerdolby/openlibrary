@@ -61,7 +61,6 @@ var OpenLibrary = /** @class */ (function () {
         };
     }
     ;
-    // use a prototype.get("baseUrl") or prototype.baseUrl
     OpenLibrary.prototype.get = function (key) {
         var value;
         for (var prop in this) {
@@ -73,6 +72,8 @@ var OpenLibrary = /** @class */ (function () {
     };
     Object.defineProperty(OpenLibrary.prototype, "payload", {
         get: function () {
+            if (!this.data)
+                return {};
             return this.data;
         },
         enumerable: false,
@@ -254,7 +255,7 @@ var OpenLibrary = /** @class */ (function () {
         if (jscmd === void 0) { jscmd = "viewapi"; }
         if (fullUrl === void 0) { fullUrl = ""; }
         return __awaiter(this, void 0, void 0, function () {
-            var request, bibKeysStr, response, queryParams, idType, field;
+            var request, bibKeysStr, response, queryParams, idType;
             return __generator(this, function (_a) {
                 request = "";
                 bibKeysStr = "";
@@ -276,15 +277,6 @@ var OpenLibrary = /** @class */ (function () {
                         });
                     }
                     bibKeysStr.slice(0, -1);
-                }
-                // todo
-                for (field in queryParams) {
-                    // counter += 1;
-                    // if (counter == 1) {
-                    //     request = `${this.bookApiUrl}?${bibKeysStr}`;
-                    // } else {
-                    //     request += `&${queryParams[field]}`;
-                    // }
                 }
                 request = bookTitle && (suffix == "" || suffix) ? this.baseUrl + "/books/" + bookId + "/" + bookTitle : this.baseUrl + "/books/" + bookId + "." + suffix;
                 response = this.executeGetRequest(request, this.requestConfig);
@@ -427,24 +419,24 @@ var OpenLibrary = /** @class */ (function () {
     };
     /**
      * Use the Search API to specify a solr query and return the results found.
-     * @param queryParam Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
+     * @param queryParam A list of comma separated query parameters (name=value pairs). Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
      * @param fields Parameter which specifies the fields to get back from solr. Use the special value * to get all fields (although be prepared for a very large response!)
      * @returns A JSON response containing the search results returned from the solr query.
      */
     OpenLibrary.prototype.search = function (queryParam, fields, archive) {
-        if (fields === void 0) { fields = ""; }
+        if (fields === void 0) { fields = "*"; }
         if (archive === void 0) { archive = false; }
         return __awaiter(this, void 0, void 0, function () {
             var query, fieldStr, isFromArchive, args, qs, request, response;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        query = !queryParam.split("").includes("=") ? "q=" + queryParam.replace(/\s+/, "+") : queryParam;
-                        fieldStr = fields ? "fields=" + fields : "";
+                        query = "q=" + queryParam.replace(/\s+/, "+");
+                        fieldStr = fields != "*" ? "fields=" + fields : fields;
                         isFromArchive = archive ? "availability" : "";
                         args = [query, fieldStr, isFromArchive];
                         qs = "";
-                        args.forEach(function (arg) { return qs += arg + ","; });
+                        args.forEach(function (arg) { return qs += arg + "&"; });
                         qs.slice(0, -1);
                         request = this.searchApiUrl + ".json?" + qs;
                         return [4 /*yield*/, axios.get(request, this.requestConfig)];
@@ -456,6 +448,32 @@ var OpenLibrary = /** @class */ (function () {
             });
         });
     };
+    /**
+     *  Return a unique list of all the book titles associated with a given author.
+     * @param authorName Author name. A string representing the name of an author you wish to return all the book titles for.
+     * @returns A set containing a list of all the non-duplicate book titles.
+     */
+    OpenLibrary.prototype.getAllTitles = function (authorName) {
+        return __awaiter(this, void 0, void 0, function () {
+            var set;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        set = new Set();
+                        return [4 /*yield*/, this.search(authorName, "title").then(function (res) {
+                                var docs = res["docs"];
+                                docs.forEach(function (book) {
+                                    set.add(book.title);
+                                });
+                            })];
+                    case 1:
+                        _a.sent();
+                        return [2 /*return*/, set];
+                }
+            });
+        });
+    };
+    ;
     /**
      * Request information about readable versions of a single book edition.
      * @param idType The Open Library identifier type. Can be 'isbn', 'lccn', 'oclc' or 'olid'.

@@ -11,6 +11,8 @@ import {
     OpenLibraryIDTypes,
     SubjectsAPIQueryParams,
     StringOrUndefined,
+    TitleObj,
+    GenericSearchResponse
 } from "./types";
 
 /**
@@ -45,7 +47,6 @@ export default class OpenLibrary {
         }
     };
 
-    // use a prototype.get("baseUrl") or prototype.baseUrl
     get(this: OpenLibrary, key: string) {
         let value;
         for (const prop in this) {
@@ -55,6 +56,7 @@ export default class OpenLibrary {
     }
 
     get payload(): Object {
+        if (!this.data) return {};
         return this.data;
     }
 
@@ -202,16 +204,6 @@ export default class OpenLibrary {
             }
             bibKeysStr.slice(0, -1);
         }
-        // todo
-        for (const field in queryParams) {
-            // counter += 1;
-            // if (counter == 1) {
-            //     request = `${this.bookApiUrl}?${bibKeysStr}`;
-            // } else {
-            //     request += `&${queryParams[field]}`;
-            // }
-            
-        }
         request = bookTitle && (suffix == "" || suffix) ? `${this.baseUrl}/books/${bookId}/${bookTitle}` : `${this.baseUrl}/books/${bookId}.${suffix}`;
         response = this.executeGetRequest(request, this.requestConfig);
         return response;
@@ -305,23 +297,39 @@ export default class OpenLibrary {
 
     /**
      * Use the Search API to specify a solr query and return the results found.
-     * @param queryParam Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
+     * @param queryParam A list of comma separated query parameters (name=value pairs). Parameter which specifies the [solr query](https://openlibrary.org/search/howto), e.g. "twain" would result in q=twain and a name=value pair would persist in the URL as "author=rowling".
      * @param fields Parameter which specifies the fields to get back from solr. Use the special value * to get all fields (although be prepared for a very large response!)
      * @returns A JSON response containing the search results returned from the solr query.
      */
-    async search(queryParam: string, fields: string = "", archive: boolean = false) {
-        let query = !queryParam.split("").includes("=")  ? `q=${queryParam.replace(/\s+/, "+")}` : queryParam;
-        let fieldStr = fields ? `fields=${fields}` : "";
+    async search(queryParam: string, fields: string = "*", archive: boolean = false) {
+        let query = `q=${queryParam.replace(/\s+/, "+")}`;
+        let fieldStr = fields != "*" ? `fields=${fields}` : fields;
         let isFromArchive = archive ? "availability" : "";
         let args: string[] = [query, fieldStr, isFromArchive];
         let qs = "";
-        args.forEach(arg => qs += `${arg},`);
+        args.forEach(arg => qs += `${arg}&`);
         qs.slice(0, -1);
         let request = `${this.searchApiUrl}.json?${qs}`;
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         this.data = response.data;
         return response.status == 200 ? this.data : response;
     }
+
+    /**
+     *  Return a unique list of all the book titles associated with a given author.
+     * @param authorName Author name. A string representing the name of an author you wish to return all the book titles for.
+     * @returns A set containing a list of all the non-duplicate book titles.
+     */
+    async getAllTitles(authorName: string): Promise<Set<string>> {
+        let set: Set<string> = new Set();
+        await this.search(authorName, "title").then((res: any) => {
+            let docs: Array<TitleObj> = res["docs"];
+            docs.forEach((book: TitleObj) => {
+                set.add(book.title);
+            });
+        });
+        return set;
+    };
 
     /**
      * Request information about readable versions of a single book edition.
