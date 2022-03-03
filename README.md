@@ -81,7 +81,7 @@ npm run test
 todo
 
 ## Kudos & Other Client Libraries
-Shoutout to the Open Library team for providing a robust set of public APIs. The official Python client library by `openlibrary` can be found below along with a link to an unofficial Open Library Ruby client.
+Shoutout to the Open Library team for providing a robust set of public APIs. The official Python client library by Open Libary can be found below along with a link to an unofficial Ruby client.
 
 - [Open Library Developer Center / APIs](https://openlibrary.org/developers/api)
 - [openlibrary/openlibrary-client](https://github.com/internetarchive/openlibrary-client#other-client-libraries)

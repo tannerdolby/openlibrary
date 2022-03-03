@@ -11,8 +11,7 @@ import {
     OpenLibraryIDTypes,
     SubjectsAPIQueryParams,
     StringOrUndefined,
-    TitleObj,
-    GenericSearchResponse
+    TitleObj
 } from "./types";
 
 /**
@@ -47,6 +46,8 @@ export default class OpenLibrary {
         }
     };
 
+    // Books
+
     get(this: OpenLibrary, key: string) {
         let value;
         for (const prop in this) {
@@ -55,7 +56,7 @@ export default class OpenLibrary {
         return value;
     }
 
-    get payload(): Object {
+    payload(): Object {
         if (!this.data) return {};
         return this.data;
     }
@@ -101,7 +102,7 @@ export default class OpenLibrary {
 
     /**
      * Get a list of book cover image URLs from the Covers API.
-     * @param {BooksCovers[]} coversObjList An array of book cover objects to return book covers for. (e.g. [{title: string, id: string | number, key: string, size: string},]
+     * @param {BooksCovers[]} coversObjList An array of book cover objects to return book covers for. i.e. [{title: string, id: string | number, key: string, size: string}]
      * @returns {string[]} An array of book cover image URLs.
     */
     async getBookCovers(coversObjList: BookCovers[]) {
@@ -117,23 +118,6 @@ export default class OpenLibrary {
         });
     };
 
-    /**
-     * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
-     * @param {string} bookId A required parameter representing the book identifier.
-     * @param {string} bookTitle Optional parameter which specifies the 'Work' (book) title.
-     * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
-     * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
-     * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
-     */
-    async getWorksPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
-        let request = bookTitle && (suffix == "" || !suffix) ? 
-            `${this.baseUrl}/works/${bookId}/${bookTitle}` : `${this.baseUrl}/works/${bookId}.${suffix}`;
-        let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(
-            fullUrl == "" ? request : fullUrl, this.requestConfig
-        );
-        this.data = response;
-        return response;
-    }
     
     /**
      * An alternative way to get an 'Editions' page for a specific book identifier and or title.
@@ -249,11 +233,11 @@ export default class OpenLibrary {
     }
 
     /**
-     * 
+     * Fetch all of the works by an author.
      * @param authorId The identifier for an author. (e.g. OL23919A)
      * @param limit The number of works to return for an author. Default is 50.
      * @param offset The number of works to offset for pagination. Default is 50.
-     * @returns {JSON} Returns the works for an author as JSON.
+     * @returns A JSON response containing an authors works.
      */
     async getAuthorWorks(authorId: string, limit: number = 0, offset: number = 0) {
         let request = `${this.baseUrl}/authors/${authorId}/works.json`;
@@ -265,6 +249,24 @@ export default class OpenLibrary {
         let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
         this.data = response.data;
         return response.status == 200 ? this.data : response;
+    }
+
+    /**
+     * Get a Work page for a specific book identifier and or title. A Work is a logical collection of similar Editions.
+     * @param {string} bookId A required parameter representing the book identifier.
+     * @param {string} bookTitle Optional parameter which specifies the 'Work' (book) title.
+     * @param {string} suffix Optional parameter which specifies the data representation of function result. ("json" | "yml")
+     * @param {string} fullUrl Optional parameter which represents a complete and valid request URL to the 'Works' API.
+     * @returns {OpenLibHTMLOrFileResponse} Returns a Work page in the specified data representation e.g. HTML, JSON, or YML.
+     */
+    async getWorksPage(bookId: string, bookTitle: string = "", suffix: Suffix = "", fullUrl: string="") {
+        let request = bookTitle && (suffix == "" || !suffix) ? 
+            `${this.baseUrl}/works/${bookId}/${bookTitle}` : `${this.baseUrl}/works/${bookId}.${suffix}`;
+        let response: OpenLibHTMLOrFileResponse = this.executeGetRequest(
+            fullUrl == "" ? request : fullUrl, this.requestConfig
+        );
+        this.data = response;
+        return response;
     }
 
     /**
