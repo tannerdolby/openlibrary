@@ -304,15 +304,17 @@ export default class OpenLibrary {
      * @returns A JSON response containing the search results returned from the solr query.
      */
     async search(queryParam: string, fields: string = "*", archive: boolean = false) {
-        let query = `q=${queryParam.replace(/\s+/, "+")}`;
-        let fieldStr = fields != "*" ? `fields=${fields}` : fields;
-        let isFromArchive = archive ? "availability" : "";
+        let params = {
+            query: `q=${queryParam.replace(/\s+/, "+")}`,
+            fieldStr: fields != "*" ? `fields=${fields}` : fields,
+            isFromArchive: archive ? "availability" : ""
+        };
+        const { query, fieldStr, isFromArchive } = params;
         let args: string[] = [query, fieldStr, isFromArchive];
-        let qs = "";
-        args.forEach(arg => qs += `${arg}&`);
-        qs.slice(0, -1);
-        let request = `${this.searchApiUrl}.json?${qs}`;
-        let response: OpenLibraryResponse = await axios.get(request, this.requestConfig);
+        let queryStr = "";
+        args.forEach(arg => queryStr += `${arg}&`);
+        queryStr.slice(0, -1);
+        let response: OpenLibraryResponse = await axios.get(`${this.searchApiUrl}.json?${queryStr}`, this.requestConfig);
         this.data = response.data;
         return response.status == 200 ? this.data : response;
     }
