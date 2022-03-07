@@ -46,22 +46,6 @@ export default class OpenLibrary {
         }
     };
 
-    // Books
-
-    get(this: OpenLibrary, key: string) {
-        let value;
-        for (const prop in this) {
-            if (prop === key) { value = Object.assign(this)[prop]; }
-        }
-        return value;
-    }
-
-    payload(): Object {
-        if (!this.data) return {};
-        return this.data;
-    }
-
-    // mainly used for Books and Covers endpoint calls
     async executeGetRequest (url: string , reqConfig: RequestConfig) {
         let response: GetWorksPageFileResponse;
         let redirectedHtml = "";
@@ -84,6 +68,22 @@ export default class OpenLibrary {
         }
         return redirectedHtml;
     }
+
+    /**
+     *  Return a unique list of all the book titles associated with a given author.
+     * @param authorName Author name. A string representing the name of an author you wish to return all the book titles for.
+     * @returns A set containing a list of all the non-duplicate book titles.
+     */
+    async getAllTitles(authorName: string): Promise<Set<string>> {
+        let set: Set<string> = new Set();
+        await this.search(authorName, "title").then((res: any) => {
+            let docs: Array<TitleObj> = res["docs"];
+            docs.forEach((book: TitleObj) => {
+                set.add(book.title);
+            });
+        });
+        return set;
+    };
 
     /**
      * Get a book covers image URL from the Covers API.
@@ -316,22 +316,6 @@ export default class OpenLibrary {
         this.data = response.data;
         return response.status == 200 ? this.data : response;
     }
-
-    /**
-     *  Return a unique list of all the book titles associated with a given author.
-     * @param authorName Author name. A string representing the name of an author you wish to return all the book titles for.
-     * @returns A set containing a list of all the non-duplicate book titles.
-     */
-    async getAllTitles(authorName: string): Promise<Set<string>> {
-        let set: Set<string> = new Set();
-        await this.search(authorName, "title").then((res: any) => {
-            let docs: Array<TitleObj> = res["docs"];
-            docs.forEach((book: TitleObj) => {
-                set.add(book.title);
-            });
-        });
-        return set;
-    };
 
     /**
      * Request information about readable versions of a single book edition.
